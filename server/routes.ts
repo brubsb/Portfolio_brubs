@@ -220,10 +220,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const published = req.query.published === 'true' ? true : 
                       req.query.published === 'false' ? false : undefined;
+      const featured = req.query.featured === 'true' ? true : 
+                     req.query.featured === 'false' ? false : undefined;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       const offset = req.query.offset ? parseInt(req.query.offset as string) : undefined;
       
-      const projects = await storage.getProjects(published, limit, offset);
+      const projects = await storage.getProjects(published, featured, limit, offset);
       res.json(projects);
     } catch (error) {
       res.status(500).json({ message: 'Error fetching projects' });

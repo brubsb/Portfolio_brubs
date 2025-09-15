@@ -8,17 +8,15 @@ import { AchievementCard } from "@/components/achievement-card";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, Linkedin, Github, Mail, Dribbble } from "lucide-react";
+import { Link } from "wouter";
+import type { Project } from "@shared/schema";
 
 export default function Home() {
   const { toast } = useToast();
   const { lastMessage } = useWebSocket();
 
-  const { data: projects = [], isLoading: projectsLoading } = useQuery({
-    queryKey: ["/api/projects", { published: true, limit: 6 }],
-    queryFn: async () => {
-      const response = await fetch("/api/projects?published=true&limit=6");
-      return response.json();
-    },
+  const { data: projects = [], isLoading: projectsLoading } = useQuery<Project[]>({
+    queryKey: ["/api/projects", { published: true, featured: true, limit: 6 }],
   });
 
   const { data: achievements = [], isLoading: achievementsLoading } = useQuery({
@@ -85,12 +83,14 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
               <Button
-                onClick={() => scrollToSection('projects')}
+                asChild
                 className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 transition-all transform hover:scale-105 font-medium text-lg"
                 data-testid="view-projects-button"
               >
-                <ExternalLink className="mr-2 h-5 w-5" />
-                Ver Projetos
+                <Link to="/projects">
+                  <ExternalLink className="mr-2 h-5 w-5" />
+                  Ver Todos os Projetos
+                </Link>
               </Button>
               <Button
                 variant="outline"
@@ -164,11 +164,11 @@ export default function Home() {
           <div className="text-center mt-12">
             <Button
               variant="outline"
-              onClick={() => scrollToSection('achievements')}
+              asChild
               className="px-8 py-4 border border-border text-foreground rounded-lg hover:bg-muted transition-all font-medium"
               data-testid="view-all-projects-button"
             >
-              Ver Conquistas
+              <Link to="/projects">Ver Todos os Projetos</Link>
             </Button>
           </div>
         </div>
