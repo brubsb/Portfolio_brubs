@@ -23,7 +23,7 @@ export function Navigation() {
 
   const navLinks = [
     { href: "/#home", label: "Início" },
-    { href: "/#projects", label: "Projetos" },
+    { href: "/projects", label: "Projetos" },
     { href: "/#achievements", label: "Conquistas" },
     { href: "/#about", label: "Sobre" },
   ];
