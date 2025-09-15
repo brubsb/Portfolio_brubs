@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { insertProjectSchema, Project, InsertProject } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -19,6 +18,9 @@ import { z } from "zod";
 const formSchema = insertProjectSchema.extend({
   tags: z.array(z.string()).default([]),
   technologies: z.array(z.string()).default([]),
+  fullDescription: z.string().default(""),
+  demoUrl: z.string().default(""),
+  githubUrl: z.string().default(""),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -51,6 +53,7 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
       demoUrl: "",
       githubUrl: "",
       isPublished: false,
+      isFeatured: false,
     },
   });
 
@@ -68,6 +71,7 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
         demoUrl: project.demoUrl || "",
         githubUrl: project.githubUrl || "",
         isPublished: project.isPublished,
+        isFeatured: project.isFeatured || false,
       });
     } else {
       form.reset({
@@ -82,6 +86,7 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
         demoUrl: "",
         githubUrl: "",
         isPublished: false,
+        isFeatured: false,
       });
     }
   }, [project, form]);
@@ -107,9 +112,15 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
         formData.append('video', videoFile);
       }
 
-      return apiRequest("POST", "/api/projects", formData, {
-        headers: {}, // Let browser set content-type for multipart
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
       });
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
@@ -150,9 +161,15 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
         formData.append('video', videoFile);
       }
 
-      return apiRequest("PATCH", `/api/projects/${project!.id}`, formData, {
-        headers: {}, // Let browser set content-type for multipart
+      const response = await fetch(`/api/projects/${project!.id}`, {
+        method: "PATCH",
+        body: formData,
+        credentials: "include",
       });
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
@@ -365,6 +382,28 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           data-testid="project-published-switch"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isFeatured"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Projeto em Destaque</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Projeto aparece na página inicial como principal
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="project-featured-switch"
                         />
                       </FormControl>
                     </FormItem>

@@ -255,6 +255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tags: JSON.parse(req.body.tags || '[]'),
         technologies: JSON.parse(req.body.technologies || '[]'),
         isPublished: req.body.isPublished === 'true',
+        isFeatured: req.body.isFeatured === 'true',
         imageUrl: files?.image?.[0] ? `/uploads/${files.image[0].filename}` : req.body.imageUrl,
         videoUrl: files?.video?.[0] ? `/uploads/${files.video[0].filename}` : req.body.videoUrl,
       });
@@ -282,6 +283,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       if (req.body.isPublished !== undefined) {
         updates.isPublished = req.body.isPublished === 'true';
+      }
+      if (req.body.isFeatured !== undefined) {
+        updates.isFeatured = req.body.isFeatured === 'true';
       }
       if (files?.image?.[0]) {
         updates.imageUrl = `/uploads/${files.image[0].filename}`;
