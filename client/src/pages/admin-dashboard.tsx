@@ -6,6 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { authManager } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -40,6 +50,11 @@ export default function AdminDashboard() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [newCommentsCount, setNewCommentsCount] = useState(0);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    type: 'project' | 'achievement';
+    id: string;
+    title: string;
+  } | null>(null);
 
   // Check admin authentication
   useEffect(() => {
@@ -84,6 +99,7 @@ export default function AdminDashboard() {
         title: "Sucesso",
         description: "Projeto excluído com sucesso!",
       });
+      setDeleteConfirmation(null);
     },
   });
 
@@ -96,8 +112,35 @@ export default function AdminDashboard() {
         title: "Sucesso",
         description: "Conquista excluída com sucesso!",
       });
+      setDeleteConfirmation(null);
     },
   });
+
+  const handleDeleteProject = (project: Project) => {
+    setDeleteConfirmation({
+      type: 'project',
+      id: project.id,
+      title: project.title,
+    });
+  };
+
+  const handleDeleteAchievement = (achievement: Achievement) => {
+    setDeleteConfirmation({
+      type: 'achievement',
+      id: achievement.id,
+      title: achievement.title,
+    });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirmation) return;
+    
+    if (deleteConfirmation.type === 'project') {
+      deleteProjectMutation.mutate(deleteConfirmation.id);
+    } else {
+      deleteAchievementMutation.mutate(deleteConfirmation.id);
+    }
+  };
 
   const handleLogout = () => {
     authManager.logout();
@@ -361,7 +404,7 @@ export default function AdminDashboard() {
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  onClick={() => deleteProjectMutation.mutate(project.id)}
+                                  onClick={() => handleDeleteProject(project)}
                                   disabled={deleteProjectMutation.isPending}
                                   data-testid={`delete-project-${project.id}`}
                                 >
@@ -411,7 +454,7 @@ export default function AdminDashboard() {
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                onClick={() => deleteAchievementMutation.mutate(achievement.id)}
+                                onClick={() => handleDeleteAchievement(achievement)}
                                 disabled={deleteAchievementMutation.isPending}
                                 data-testid={`delete-achievement-${achievement.id}`}
                               >
@@ -460,6 +503,38 @@ export default function AdminDashboard() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirmation} onOpenChange={() => setDeleteConfirmation(null)}>
+        <AlertDialogContent data-testid="delete-confirmation-dialog">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza de que deseja excluir {deleteConfirmation?.type === 'project' ? 'o projeto' : 'a conquista'} 
+              "<strong>{deleteConfirmation?.title}</strong>"?
+              <br />
+              <br />
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              disabled={deleteProjectMutation.isPending || deleteAchievementMutation.isPending}
+              data-testid="cancel-delete"
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={deleteProjectMutation.isPending || deleteAchievementMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="confirm-delete"
+            >
+              {(deleteProjectMutation.isPending || deleteAchievementMutation.isPending) ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
