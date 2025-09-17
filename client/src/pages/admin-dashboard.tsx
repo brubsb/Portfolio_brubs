@@ -101,6 +101,25 @@ export default function AdminDashboard() {
       });
       setDeleteConfirmation(null);
     },
+    onError: (error: any) => {
+      console.error('Delete project error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        authManager.logout();
+        setLocation('/admin');
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o projeto. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+      setDeleteConfirmation(null);
+    },
   });
 
   const deleteAchievementMutation = useMutation({
@@ -112,6 +131,25 @@ export default function AdminDashboard() {
         title: "Sucesso",
         description: "Conquista excluída com sucesso!",
       });
+      setDeleteConfirmation(null);
+    },
+    onError: (error: any) => {
+      console.error('Delete achievement error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        authManager.logout();
+        setLocation('/admin');
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir a conquista. Tente novamente.",
+          variant: "destructive",
+        });
+      }
       setDeleteConfirmation(null);
     },
   });
