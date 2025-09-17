@@ -13,6 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertProjectSchema, Project, InsertProject } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { authManager } from "@/lib/auth";
 import { z } from "zod";
 
 const formSchema = insertProjectSchema.extend({
@@ -112,8 +113,13 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
         formData.append('video', videoFile);
       }
 
+      const authHeaders = authManager.getAuthHeaders();
+      const headers = { ...authHeaders };
+      delete headers["Content-Type"]; // Remove Content-Type for FormData
+
       const response = await fetch("/api/projects", {
         method: "POST",
+        headers: headers,
         body: formData,
         credentials: "include",
       });
@@ -131,12 +137,21 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
       });
       onClose();
     },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao criar projeto. Tente novamente.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      console.error('Create project error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao criar projeto. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -161,8 +176,13 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
         formData.append('video', videoFile);
       }
 
+      const authHeaders = authManager.getAuthHeaders();
+      const headers = { ...authHeaders };
+      delete headers["Content-Type"]; // Remove Content-Type for FormData
+
       const response = await fetch(`/api/projects/${project!.id}`, {
         method: "PATCH",
+        headers: headers,
         body: formData,
         credentials: "include",
       });
@@ -180,12 +200,21 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
       });
       onClose();
     },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar projeto. Tente novamente.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      console.error('Update project error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar projeto. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     },
   });
 

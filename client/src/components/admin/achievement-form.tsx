@@ -85,12 +85,21 @@ export function AchievementForm({ achievement, isOpen, onClose }: AchievementFor
       });
       onClose();
     },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao criar conquista. Tente novamente.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      console.error('Create achievement error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao criar conquista. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -110,12 +119,21 @@ export function AchievementForm({ achievement, isOpen, onClose }: AchievementFor
       });
       onClose();
     },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar conquista. Tente novamente.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      console.error('Update achievement error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar conquista. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
