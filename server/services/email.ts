@@ -1,8 +1,10 @@
 import { MailService } from '@sendgrid/mail';
 
 const mailService = new MailService();
-const apiKey = process.env.SENDGRID_API_KEY || process.env.EMAIL_API_KEY || "default-key";
-mailService.setApiKey(apiKey);
+const apiKey = process.env.SENDGRID_API_KEY || process.env.EMAIL_API_KEY;
+if (apiKey) {
+  mailService.setApiKey(apiKey);
+}
 
 interface EmailParams {
   to: string;
@@ -14,8 +16,8 @@ interface EmailParams {
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
-    if (apiKey === "default-key") {
-      console.log('Email would be sent:', params);
+    if (!apiKey) {
+      console.log('Email would be sent (no API key configured):', params);
       return true; // Return success for development
     }
     
@@ -23,7 +25,7 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       to: params.to,
       from: params.from,
       subject: params.subject,
-      text: params.text,
+      text: params.text || '',
       html: params.html,
     });
     return true;

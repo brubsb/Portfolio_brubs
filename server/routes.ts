@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
@@ -6,6 +6,19 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+
+// Extend Express Request type to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        isAdmin: boolean;
+      };
+    }
+  }
+}
 import { storage } from "./storage";
 import { 
   insertUserSchema, 
@@ -18,7 +31,7 @@ import {
 import { sendEmail } from "./services/email";
 import { shareOnLinkedIn } from "./services/linkedin";
 
-const JWT_SECRET = process.env.SESSION_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || "temp-dev-secret-" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 // Configure multer for file uploads
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -387,6 +400,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/comments', authenticateToken, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+      
       const commentData = insertCommentSchema.parse({
         ...req.body,
         userId: req.user.id
@@ -423,6 +440,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Likes routes
   app.post('/api/likes/toggle', authenticateToken, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+      
       const likeData = insertLikeSchema.parse({
         ...req.body,
         userId: req.user.id
@@ -437,6 +458,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/likes/user', authenticateToken, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+      
       const likes = await storage.getUserLikes(req.user.id);
       res.json(likes);
     } catch (error) {
@@ -464,7 +489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: item.title,
         description: item.description,
         url: `${process.env.FRONTEND_URL || 'http://localhost:5000'}/${projectId ? 'projects' : 'achievements'}/${item.id}`,
-        imageUrl: 'imageUrl' in item ? item.imageUrl : undefined
+        imageUrl: 'imageUrl' in item ? item.imageUrl || undefined : undefined
       });
 
       res.json({ shareUrl });
