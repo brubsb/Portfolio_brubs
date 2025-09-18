@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -263,15 +263,6 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
           <DialogTitle data-testid="project-form-title">
             {project ? "Editar Projeto" : "Novo Projeto"}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute top-4 right-4"
-            data-testid="project-form-close"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         <Form {...form}>

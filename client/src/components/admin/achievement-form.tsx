@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -152,15 +151,6 @@ export function AchievementForm({ achievement, isOpen, onClose }: AchievementFor
           <DialogTitle data-testid="achievement-form-title">
             {achievement ? "Editar Conquista" : "Nova Conquista"}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute top-4 right-4"
-            data-testid="achievement-form-close"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         <Form {...form}>
