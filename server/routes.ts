@@ -407,6 +407,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/comments/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const success = await storage.deleteComment(req.params.id);
+      if (success) {
+        res.json({ message: 'Comment deleted successfully' });
+      } else {
+        res.status(404).json({ message: 'Comment not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting comment' });
+    }
+  });
+
   // Likes routes
   app.post('/api/likes/toggle', authenticateToken, async (req, res) => {
     try {
