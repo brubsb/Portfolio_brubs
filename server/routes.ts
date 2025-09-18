@@ -407,7 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/comments/:id', authenticateToken, requireAdmin, async (req, res) => {
+  app.delete('/api/comments/:id', authenticateToken, authenticateAdmin, async (req, res) => {
     try {
       const success = await storage.deleteComment(req.params.id);
       if (success) {

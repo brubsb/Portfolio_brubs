@@ -332,244 +332,331 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold" data-testid="dashboard-title">Dashboard</h1>
+            <h1 className="text-3xl font-bold" data-testid="dashboard-title">
+              {activeSection === 'comments' ? 'Comentários' : 'Dashboard'}
+            </h1>
             <p className="text-muted-foreground" data-testid="dashboard-subtitle">
-              Bem-vinda de volta, {user?.name}!
+              {activeSection === 'comments' 
+                ? 'Gerencie todos os comentários dos seus projetos e conquistas'
+                : `Bem-vinda de volta, ${user?.name}!`
+              }
             </p>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="glass-morphism">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Projetos</p>
-                  <p className="text-2xl font-bold" data-testid="stats-total-projects">{stats.totalProjects || projects.length}</p>
-                </div>
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
-                  <FolderOpen className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-morphism">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Curtidas</p>
-                  <p className="text-2xl font-bold" data-testid="stats-total-likes">{stats.totalLikes || 0}</p>
-                </div>
-                <div className="w-12 h-12 bg-red-400/20 rounded-full flex items-center justify-center">
-                  <Heart className="h-6 w-6 text-red-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-morphism">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Comentários</p>
-                  <p className="text-2xl font-bold" data-testid="stats-total-comments">{stats.totalComments || 0}</p>
-                </div>
-                <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center">
-                  <MessageCircle className="h-6 w-6 text-secondary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-morphism">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Conquistas</p>
-                  <p className="text-2xl font-bold" data-testid="stats-total-achievements">{stats.totalAchievements || achievements.length}</p>
-                </div>
-                <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
-                  <Trophy className="h-6 w-6 text-accent" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Content Tabs */}
-        <Tabs defaultValue="projects" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <TabsList>
-              <TabsTrigger value="projects" data-testid="projects-tab">Projetos</TabsTrigger>
-              <TabsTrigger value="achievements" data-testid="achievements-tab">Conquistas</TabsTrigger>
-            </TabsList>
-            
-            <div className="flex space-x-2">
-              <Button
-                onClick={() => setShowProjectForm(true)}
-                className="bg-primary text-primary-foreground hover:bg-primary/80"
-                data-testid="new-project-button"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Novo Projeto
-              </Button>
-              <Button
-                onClick={() => setShowAchievementForm(true)}
-                variant="outline"
-                data-testid="new-achievement-button"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nova Conquista
-              </Button>
-            </div>
-          </div>
-
-          <TabsContent value="projects">
-            <Card className="glass-morphism">
-              <CardHeader>
-                <CardTitle>Projetos Recentes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {projects.length === 0 ? (
-                  <div className="text-center py-8" data-testid="no-projects-message">
-                    <p className="text-muted-foreground">Nenhum projeto encontrado.</p>
+        {activeSection === 'dashboard' ? (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <Card className="glass-morphism">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total de Projetos</p>
+                      <p className="text-2xl font-bold" data-testid="stats-total-projects">{stats.totalProjects || projects.length}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                      <FolderOpen className="h-6 w-6 text-primary" />
+                    </div>
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full" data-testid="projects-table">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Projeto</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Curtidas</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Data</th>
-                          <th className="text-left py-3 px-4 font-medium text-muted-foreground">Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {projects.map((project: Project) => (
-                          <tr key={project.id} className="border-b border-border/50 hover:bg-muted/20" data-testid={`project-row-${project.id}`}>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center space-x-3">
-                                {project.imageUrl && (
-                                  <img
-                                    src={project.imageUrl}
-                                    alt="Project thumbnail"
-                                    className="w-10 h-8 rounded object-cover"
-                                  />
-                                )}
-                                <div>
-                                  <p className="font-medium" data-testid={`project-title-${project.id}`}>{project.title}</p>
-                                  <p className="text-sm text-muted-foreground">{project.category}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-morphism">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total de Curtidas</p>
+                      <p className="text-2xl font-bold" data-testid="stats-total-likes">{stats.totalLikes || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-red-400/20 rounded-full flex items-center justify-center">
+                      <Heart className="h-6 w-6 text-red-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-morphism">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Comentários</p>
+                      <p className="text-2xl font-bold" data-testid="stats-total-comments">{stats.totalComments || comments.length}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center">
+                      <MessageCircle className="h-6 w-6 text-secondary" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-morphism">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Conquistas</p>
+                      <p className="text-2xl font-bold" data-testid="stats-total-achievements">{stats.totalAchievements || achievements.length}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
+                      <Trophy className="h-6 w-6 text-accent" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Content Tabs */}
+            <Tabs defaultValue="projects" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <TabsList>
+                  <TabsTrigger value="projects" data-testid="projects-tab">Projetos</TabsTrigger>
+                  <TabsTrigger value="achievements" data-testid="achievements-tab">Conquistas</TabsTrigger>
+                </TabsList>
+                
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => setShowProjectForm(true)}
+                    className="bg-primary text-primary-foreground hover:bg-primary/80"
+                    data-testid="new-project-button"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Novo Projeto
+                  </Button>
+                  <Button
+                    onClick={() => setShowAchievementForm(true)}
+                    variant="outline"
+                    data-testid="new-achievement-button"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nova Conquista
+                  </Button>
+                </div>
+              </div>
+
+              <TabsContent value="projects">
+                <Card className="glass-morphism">
+                  <CardHeader>
+                    <CardTitle>Projetos Recentes</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {projects.length === 0 ? (
+                      <div className="text-center py-8" data-testid="no-projects-message">
+                        <p className="text-muted-foreground">Nenhum projeto encontrado.</p>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full" data-testid="projects-table">
+                          <thead>
+                            <tr className="border-b border-border">
+                              <th className="text-left py-3 px-4 font-medium text-muted-foreground">Projeto</th>
+                              <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
+                              <th className="text-left py-3 px-4 font-medium text-muted-foreground">Curtidas</th>
+                              <th className="text-left py-3 px-4 font-medium text-muted-foreground">Data</th>
+                              <th className="text-left py-3 px-4 font-medium text-muted-foreground">Ações</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {projects.map((project: Project) => (
+                              <tr key={project.id} className="border-b border-border/50 hover:bg-muted/20" data-testid={`project-row-${project.id}`}>
+                                <td className="py-3 px-4">
+                                  <div className="flex items-center space-x-3">
+                                    {project.imageUrl && (
+                                      <img
+                                        src={project.imageUrl}
+                                        alt="Project thumbnail"
+                                        className="w-10 h-8 rounded object-cover"
+                                      />
+                                    )}
+                                    <div>
+                                      <p className="font-medium" data-testid={`project-title-${project.id}`}>{project.title}</p>
+                                      <p className="text-sm text-muted-foreground">{project.category}</p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Badge 
+                                    variant={project.isPublished ? "default" : "secondary"}
+                                    className={project.isPublished ? "bg-green-400/20 text-green-400" : "bg-yellow-400/20 text-yellow-400"}
+                                    data-testid={`project-status-${project.id}`}
+                                  >
+                                    {project.isPublished ? "Publicado" : "Rascunho"}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4" data-testid={`project-likes-${project.id}`}>{project.likes}</td>
+                                <td className="py-3 px-4 text-muted-foreground">
+                                  {new Date(project.createdAt).toLocaleDateString('pt-BR')}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        setEditingProject(project);
+                                        setShowProjectForm(true);
+                                      }}
+                                      data-testid={`edit-project-${project.id}`}
+                                    >
+                                      <Edit className="h-4 w-4 text-primary" />
+                                    </Button>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      onClick={() => handleDeleteProject(project)}
+                                      disabled={deleteProjectMutation.isPending}
+                                      data-testid={`delete-project-${project.id}`}
+                                    >
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="achievements">
+                <Card className="glass-morphism">
+                  <CardHeader>
+                    <CardTitle>Conquistas</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {achievements.length === 0 ? (
+                      <div className="text-center py-8" data-testid="no-achievements-message">
+                        <p className="text-muted-foreground">Nenhuma conquista encontrada.</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="achievements-grid">
+                        {achievements.map((achievement: Achievement) => (
+                          <Card key={achievement.id} className="glass-morphism" data-testid={`achievement-card-${achievement.id}`}>
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-bold" data-testid={`achievement-title-${achievement.id}`}>{achievement.title}</h3>
+                                <div className="flex space-x-1">
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      setEditingAchievement(achievement);
+                                      setShowAchievementForm(true);
+                                    }}
+                                    data-testid={`edit-achievement-${achievement.id}`}
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleDeleteAchievement(achievement)}
+                                    disabled={deleteAchievementMutation.isPending}
+                                    data-testid={`delete-achievement-${achievement.id}`}
+                                  >
+                                    <Trash2 className="h-3 w-3 text-destructive" />
+                                  </Button>
                                 </div>
                               </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge 
-                                variant={project.isPublished ? "default" : "secondary"}
-                                className={project.isPublished ? "bg-green-400/20 text-green-400" : "bg-yellow-400/20 text-yellow-400"}
-                                data-testid={`project-status-${project.id}`}
-                              >
-                                {project.isPublished ? "Publicado" : "Rascunho"}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4" data-testid={`project-likes-${project.id}`}>{project.likes}</td>
-                            <td className="py-3 px-4 text-muted-foreground">
-                              {new Date(project.createdAt).toLocaleDateString('pt-BR')}
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex space-x-2">
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    setEditingProject(project);
-                                    setShowProjectForm(true);
-                                  }}
-                                  data-testid={`edit-project-${project.id}`}
-                                >
-                                  <Edit className="h-4 w-4 text-primary" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleDeleteProject(project)}
-                                  disabled={deleteProjectMutation.isPending}
-                                  data-testid={`delete-project-${project.id}`}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
+                              <p className="text-sm text-muted-foreground mb-2">{achievement.description}</p>
+                              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <span>{new Date(achievement.date).toLocaleDateString('pt-BR')}</span>
+                                <span className="flex items-center">
+                                  <Heart className="h-3 w-3 mr-1" />
+                                  {achievement.likes}
+                                </span>
                               </div>
-                            </td>
-                          </tr>
+                            </CardContent>
+                          </Card>
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="achievements">
-            <Card className="glass-morphism">
-              <CardHeader>
-                <CardTitle>Conquistas</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {achievements.length === 0 ? (
-                  <div className="text-center py-8" data-testid="no-achievements-message">
-                    <p className="text-muted-foreground">Nenhuma conquista encontrada.</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="achievements-grid">
-                    {achievements.map((achievement: Achievement) => (
-                      <Card key={achievement.id} className="glass-morphism" data-testid={`achievement-card-${achievement.id}`}>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </>
+        ) : (
+          /* Comments Section */
+          <Card className="glass-morphism">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Todos os Comentários ({comments.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {comments.length === 0 ? (
+                <div className="text-center py-8" data-testid="no-comments-message">
+                  <MessageCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Nenhum comentário encontrado.</p>
+                </div>
+              ) : (
+                <div className="space-y-4" data-testid="comments-list">
+                  {comments.map((comment: Comment & { user: { name: string; avatar?: string } }) => {
+                    const relatedProject = projects.find(p => p.id === comment.projectId);
+                    const relatedAchievement = achievements.find(a => a.id === comment.achievementId);
+                    
+                    return (
+                      <Card key={comment.id} className="border border-border/50" data-testid={`comment-card-${comment.id}`}>
                         <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-bold" data-testid={`achievement-title-${achievement.id}`}>{achievement.title}</h3>
-                            <div className="flex space-x-1">
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => {
-                                  setEditingAchievement(achievement);
-                                  setShowAchievementForm(true);
-                                }}
-                                data-testid={`edit-achievement-${achievement.id}`}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => handleDeleteAchievement(achievement)}
-                                disabled={deleteAchievementMutation.isPending}
-                                data-testid={`delete-achievement-${achievement.id}`}
-                              >
-                                <Trash2 className="h-3 w-3 text-destructive" />
-                              </Button>
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start space-x-3 flex-1">
+                              <img
+                                src={comment.user.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=32&h=32"}
+                                alt={comment.user.name}
+                                className="w-8 h-8 rounded-full object-cover"
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <p className="font-medium text-sm" data-testid={`comment-author-${comment.id}`}>
+                                    {comment.user.name}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(comment.createdAt).toLocaleDateString('pt-BR', {
+                                      day: '2-digit',
+                                      month: '2-digit',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </span>
+                                </div>
+                                <p className="text-sm mb-2" data-testid={`comment-content-${comment.id}`}>
+                                  {comment.content}
+                                </p>
+                                <div className="text-xs text-muted-foreground">
+                                  Comentário em: {' '}
+                                  <span className="font-medium">
+                                    {relatedProject ? `Projeto "${relatedProject.title}"` : 
+                                     relatedAchievement ? `Conquista "${relatedAchievement.title}"` : 
+                                     'Item removido'}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-2">{achievement.description}</p>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>{new Date(achievement.date).toLocaleDateString('pt-BR')}</span>
-                            <span className="flex items-center">
-                              <Heart className="h-3 w-3 mr-1" />
-                              {achievement.likes}
-                            </span>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleDeleteComment(comment)}
+                              disabled={deleteCommentMutation.isPending}
+                              className="flex-shrink-0"
+                              data-testid={`delete-comment-${comment.id}`}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </main>
 
       {/* Modals */}
