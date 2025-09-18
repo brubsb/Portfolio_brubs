@@ -259,8 +259,9 @@ export default function AdminDashboard() {
 
           <nav className="space-y-2">
             <Button
-              variant="secondary"
+              variant={activeSection === 'dashboard' ? "secondary" : "ghost"}
               className="w-full justify-start"
+              onClick={() => setActiveSection('dashboard')}
               data-testid="nav-dashboard"
             >
               <BarChart3 className="mr-3 h-4 w-4" />
@@ -285,8 +286,12 @@ export default function AdminDashboard() {
               Conquistas
             </Button>
             <Button
-              variant="ghost"
+              variant={activeSection === 'comments' ? "secondary" : "ghost"}
               className="w-full justify-start relative"
+              onClick={() => {
+                setActiveSection('comments');
+                setNewCommentsCount(0); // Reset notification count when viewing comments
+              }}
               data-testid="nav-comments"
             >
               <MessageCircle className="mr-3 h-4 w-4" />
