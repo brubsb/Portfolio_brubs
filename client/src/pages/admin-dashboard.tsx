@@ -36,6 +36,8 @@ import {
   ArrowLeft,
   Heart,
   Bell,
+  Camera,
+  Upload,
 } from "lucide-react";
 import { Project, Achievement, Comment } from "@shared/schema";
 
@@ -50,12 +52,14 @@ export default function AdminDashboard() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [newCommentsCount, setNewCommentsCount] = useState(0);
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments'>('dashboard');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments' | 'profile'>('dashboard');
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     type: 'project' | 'achievement' | 'comment';
     id: string;
     title: string;
   } | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Check admin authentication
   useEffect(() => {
@@ -192,6 +196,72 @@ export default function AdminDashboard() {
     },
   });
 
+  const updateProfileMutation = useMutation({
+    mutationFn: async (avatarFile: File) => {
+      const formData = new FormData();
+      formData.append('avatar', avatarFile);
+
+      const authHeaders = authManager.getAuthHeaders();
+      const headers = { ...authHeaders };
+      delete headers["Content-Type"]; // Remove Content-Type for FormData
+
+      const response = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: headers,
+        body: formData,
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Update auth manager with new user data
+      const currentAuth = authManager.getUser();
+      if (currentAuth) {
+        authManager.setAuth(data.user, authManager.getToken()!);
+      }
+      
+      toast({
+        title: "Sucesso",
+        description: "Foto de perfil atualizada com sucesso!",
+      });
+      setAvatarFile(null);
+      setIsUploading(false);
+    },
+    onError: (error: any) => {
+      console.error('Update avatar error:', error);
+      setIsUploading(false);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+        authManager.logout();
+        setLocation('/admin');
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar foto de perfil. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setIsUploading(true);
+      updateProfileMutation.mutate(file);
+    }
+  };
+
   const handleDeleteProject = (project: Project) => {
     setDeleteConfirmation({
       type: 'project',
@@ -245,12 +315,30 @@ export default function AdminDashboard() {
       <nav className="w-64 bg-card border-r border-border flex flex-col" data-testid="admin-sidebar">
         <div className="p-6">
           <div className="flex items-center space-x-3 mb-8">
-            <img
-              src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"}
-              alt="Admin Profile"
-              className="w-12 h-12 rounded-full border-2 border-primary object-cover"
-              data-testid="admin-profile-image"
-            />
+            <div className="relative group">
+              <img
+                src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"}
+                alt="Admin Profile"
+                className="w-12 h-12 rounded-full border-2 border-primary object-cover"
+                data-testid="admin-profile-image"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <Camera className="h-4 w-4 text-white" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  data-testid="avatar-upload-input"
+                  disabled={isUploading}
+                />
+              </div>
+              {isUploading && (
+                <div className="absolute inset-0 bg-primary bg-opacity-50 rounded-full flex items-center justify-center">
+                  <Upload className="h-4 w-4 text-white animate-pulse" />
+                </div>
+              )}
+            </div>
             <div>
               <h3 className="font-bold" data-testid="admin-profile-name">{user?.name || 'Admin'}</h3>
               <p className="text-sm text-muted-foreground">Administrador</p>
@@ -302,6 +390,15 @@ export default function AdminDashboard() {
                 </div>
               )}
             </Button>
+            <Button
+              variant={activeSection === 'profile' ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => setActiveSection('profile')}
+              data-testid="nav-profile"
+            >
+              <User className="mr-3 h-4 w-4" />
+              Perfil
+            </Button>
           </nav>
         </div>
 
@@ -333,18 +430,92 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold" data-testid="dashboard-title">
-              {activeSection === 'comments' ? 'Comentários' : 'Dashboard'}
+              {activeSection === 'comments' ? 'Comentários' : 
+               activeSection === 'profile' ? 'Perfil' : 'Dashboard'}
             </h1>
             <p className="text-muted-foreground" data-testid="dashboard-subtitle">
               {activeSection === 'comments' 
                 ? 'Gerencie todos os comentários dos seus projetos e conquistas'
+                : activeSection === 'profile'
+                ? 'Gerencie suas informações pessoais e foto de perfil'
                 : `Bem-vinda de volta, ${user?.name}!`
               }
             </p>
           </div>
         </div>
 
-        {activeSection === 'dashboard' ? (
+        {activeSection === 'profile' ? (
+          <Card className="glass-morphism max-w-2xl">
+            <CardHeader>
+              <CardTitle>Informações do Perfil</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center space-x-6">
+                <div className="relative group">
+                  <img
+                    src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200"}
+                    alt="Foto de Perfil"
+                    className="w-24 h-24 rounded-full border-4 border-primary object-cover"
+                    data-testid="profile-avatar-large"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <Camera className="h-6 w-6 text-white" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      data-testid="profile-avatar-upload"
+                      disabled={isUploading}
+                    />
+                  </div>
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-primary bg-opacity-50 rounded-full flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-white animate-pulse" />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold" data-testid="profile-name">{user?.name}</h3>
+                  <p className="text-muted-foreground" data-testid="profile-email">{user?.email}</p>
+                  <Badge className="bg-primary/20 text-primary">Administrador</Badge>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Alterar Foto de Perfil</h4>
+                <p className="text-sm text-muted-foreground">
+                  Clique na sua foto de perfil acima ou use o botão abaixo para fazer upload de uma nova imagem. 
+                  Esta foto será exibida em todo o seu portfólio.
+                </p>
+                <div className="flex items-center space-x-4">
+                  <Button 
+                    onClick={() => document.getElementById('profile-file-input')?.click()}
+                    disabled={isUploading}
+                    className="bg-primary text-primary-foreground hover:bg-primary/80"
+                    data-testid="upload-avatar-button"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {isUploading ? 'Carregando...' : 'Escolher Nova Foto'}
+                  </Button>
+                  <input
+                    id="profile-file-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    disabled={isUploading}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : activeSection === 'dashboard' ? (
           <>
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

@@ -228,6 +228,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user profile (including avatar)
+  app.patch('/api/user/profile', authenticateToken, upload.single('avatar'), async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+
+      const file = req.file;
+      const updates: any = {};
+
+      // Handle avatar upload
+      if (file) {
+        updates.avatar = `/uploads/${file.filename}`;
+      }
+
+      // Handle other profile updates (name, etc.)
+      if (req.body.name) {
+        updates.name = req.body.name;
+      }
+
+      const updatedUser = await storage.updateUser(req.user.id, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Return user data (excluding password)
+      res.json({
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          avatar: updatedUser.avatar,
+          isAdmin: updatedUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Update profile error:', error);
+      res.status(500).json({ message: 'Error updating profile' });
+    }
+  });
+
   // Projects routes
   app.get('/api/projects', async (req, res) => {
     try {
