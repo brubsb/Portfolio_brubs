@@ -234,16 +234,8 @@ export function AchievementForm({ achievement, isOpen, onClose }: AchievementFor
               )}
             />
 
-            {/* Submit Buttons */}
-            <div className="flex justify-end space-x-2 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                data-testid="achievement-form-cancel"
-              >
-                Cancelar
-              </Button>
+            {/* Submit Button */}
+            <div className="flex justify-end pt-6">
               <Button
                 type="submit"
                 disabled={createMutation.isPending || updateMutation.isPending}

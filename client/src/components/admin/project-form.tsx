@@ -489,16 +489,8 @@ export function ProjectForm({ project, isOpen, onClose }: ProjectFormProps) {
               </div>
             </div>
 
-            {/* Submit Buttons */}
-            <div className="flex justify-end space-x-2 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                data-testid="project-form-cancel"
-              >
-                Cancelar
-              </Button>
+            {/* Submit Button */}
+            <div className="flex justify-end pt-6">
               <Button
                 type="submit"
                 disabled={createMutation.isPending || updateMutation.isPending}
