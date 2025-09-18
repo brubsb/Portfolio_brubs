@@ -37,7 +37,7 @@ import {
   Heart,
   Bell,
 } from "lucide-react";
-import { Project, Achievement } from "@shared/schema";
+import { Project, Achievement, Comment } from "@shared/schema";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -50,8 +50,9 @@ export default function AdminDashboard() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [newCommentsCount, setNewCommentsCount] = useState(0);
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments'>('dashboard');
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
-    type: 'project' | 'achievement';
+    type: 'project' | 'achievement' | 'comment';
     id: string;
     title: string;
   } | null>(null);
@@ -87,6 +88,11 @@ export default function AdminDashboard() {
 
   const { data: achievements = [] } = useQuery({
     queryKey: ["/api/achievements"],
+    enabled: authManager.isAdmin(),
+  });
+
+  const { data: comments = [] } = useQuery({
+    queryKey: ["/api/comments"],
     enabled: authManager.isAdmin(),
   });
 
@@ -154,6 +160,38 @@ export default function AdminDashboard() {
     },
   });
 
+  const deleteCommentMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/comments/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/comments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({
+        title: "Sucesso",
+        description: "Comentário excluído com sucesso!",
+      });
+      setDeleteConfirmation(null);
+    },
+    onError: (error: any) => {
+      console.error('Delete comment error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        authManager.logout();
+        setLocation('/admin');
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o comentário. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+      setDeleteConfirmation(null);
+    },
+  });
+
   const handleDeleteProject = (project: Project) => {
     setDeleteConfirmation({
       type: 'project',
@@ -170,13 +208,23 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleDeleteComment = (comment: Comment & { user: { name: string } }) => {
+    setDeleteConfirmation({
+      type: 'comment',
+      id: comment.id,
+      title: `comentário de ${comment.user.name}`,
+    });
+  };
+
   const confirmDelete = () => {
     if (!deleteConfirmation) return;
     
     if (deleteConfirmation.type === 'project') {
       deleteProjectMutation.mutate(deleteConfirmation.id);
-    } else {
+    } else if (deleteConfirmation.type === 'achievement') {
       deleteAchievementMutation.mutate(deleteConfirmation.id);
+    } else if (deleteConfirmation.type === 'comment') {
+      deleteCommentMutation.mutate(deleteConfirmation.id);
     }
   };
 
