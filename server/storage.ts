@@ -86,6 +86,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
     };
     this.users.set(adminUser.id, adminUser);
+    console.log('Admin user initialized:', { id: adminUser.id, email: adminUser.email, name: adminUser.name });
   }
 
   private initializeSampleData() {

@@ -229,15 +229,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch('/api/user/profile', authenticateToken, upload.single('avatar'), async (req, res) => {
     try {
       if (!req.user) {
+        console.log('Profile update: User not authenticated');
         return res.status(401).json({ message: 'User not authenticated' });
       }
 
+      console.log('Profile update request from user:', req.user.id, req.user.email);
+      
       const file = req.file;
       const updates: any = {};
 
       // Handle avatar upload
       if (file) {
         updates.avatar = `/uploads/${file.filename}`;
+        console.log('Avatar file uploaded:', file.filename);
       }
 
       // Handle other profile updates (name, etc.)
@@ -245,9 +249,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updates.name = req.body.name;
       }
 
+      console.log('Updates to apply:', updates);
+      
+      // First check if user exists
+      const existingUser = await storage.getUser(req.user.id);
+      console.log('Existing user found:', existingUser ? 'YES' : 'NO');
+      if (existingUser) {
+        console.log('Existing user details:', { id: existingUser.id, email: existingUser.email, name: existingUser.name });
+      }
+
       const updatedUser = await storage.updateUser(req.user.id, updates);
       
       if (!updatedUser) {
+        console.log('Failed to update user - user not found in storage');
         return res.status(404).json({ message: 'User not found' });
       }
 
