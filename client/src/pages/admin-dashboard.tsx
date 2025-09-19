@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +41,7 @@ import {
   Bell,
   Camera,
   Upload,
+  Save,
 } from "lucide-react";
 import { Project, Achievement, Comment, Tool } from "@shared/schema";
 
@@ -55,7 +58,7 @@ export default function AdminDashboard() {
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
   const [newCommentsCount, setNewCommentsCount] = useState(0);
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments' | 'profile' | 'about-photo'>('dashboard');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments' | 'profile'>('dashboard');
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     type: 'project' | 'achievement' | 'comment' | 'tool';
     id: string;
@@ -65,6 +68,11 @@ export default function AdminDashboard() {
   const [isUploading, setIsUploading] = useState(false);
   const [aboutPhotoFile, setAboutPhotoFile] = useState<File | null>(null);
   const [isUploadingAboutPhoto, setIsUploadingAboutPhoto] = useState(false);
+  const [aboutText, setAboutText] = useState('');
+  const [aboutDescription, setAboutDescription] = useState('');
+  const [skills, setSkills] = useState<string[]>([]);
+  const [newSkill, setNewSkill] = useState('');
+  const [isUpdatingAbout, setIsUpdatingAbout] = useState(false);
 
   // Check admin authentication
   useEffect(() => {
@@ -73,6 +81,16 @@ export default function AdminDashboard() {
       return;
     }
   }, [setLocation]);
+
+  // Load current user data into form fields
+  useEffect(() => {
+    const user = authManager.getUser();
+    if (user) {
+      setAboutText(user.aboutText || '');
+      setAboutDescription(user.aboutDescription || '');
+      setSkills(user.skills || []);
+    }
+  }, []);
 
   // Handle real-time notifications
   useEffect(() => {
@@ -295,6 +313,44 @@ export default function AdminDashboard() {
     },
   });
 
+  const updateAboutInfoMutation = useMutation({
+    mutationFn: async (data: { aboutText: string; aboutDescription: string; skills: string[] }) => {
+      return apiRequest("PATCH", "/api/user/about", data);
+    },
+    onSuccess: (data) => {
+      // Update auth manager with new user data
+      const currentToken = authManager.getToken();
+      if (currentToken) {
+        authManager.login({ token: currentToken, user: data.user });
+      }
+      
+      toast({
+        title: "Sucesso",
+        description: "Informações atualizadas com sucesso!",
+      });
+      setIsUpdatingAbout(false);
+    },
+    onError: (error: any) => {
+      console.error('Update about info error:', error);
+      setIsUpdatingAbout(false);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+        authManager.logout();
+        setLocation('/admin');
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar informações. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
   const updateAboutPhotoMutation = useMutation({
     mutationFn: async (aboutPhotoFile: File) => {
       const formData = new FormData();
@@ -423,6 +479,22 @@ export default function AdminDashboard() {
     setLocation('/');
   };
 
+  const handleUpdateAboutInfo = () => {
+    setIsUpdatingAbout(true);
+    updateAboutInfoMutation.mutate({ aboutText, aboutDescription, skills });
+  };
+
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+      setSkills([...skills, newSkill.trim()]);
+      setNewSkill('');
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setSkills(skills.filter(skill => skill !== skillToRemove));
+  };
+
   const user = authManager.getUser();
 
   if (!authManager.isAdmin()) {
@@ -519,15 +591,6 @@ export default function AdminDashboard() {
               <User className="mr-3 h-4 w-4" />
               Perfil
             </Button>
-            <Button
-              variant={activeSection === 'about-photo' ? "secondary" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setActiveSection('about-photo')}
-              data-testid="nav-about-photo"
-            >
-              <Camera className="mr-3 h-4 w-4" />
-              Foto Sobre Mim
-            </Button>
           </nav>
         </div>
 
@@ -560,16 +623,13 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-3xl font-bold" data-testid="dashboard-title">
               {activeSection === 'comments' ? 'Comentários' : 
-               activeSection === 'profile' ? 'Perfil' :
-               activeSection === 'about-photo' ? 'Foto Sobre Mim' : 'Dashboard'}
+               activeSection === 'profile' ? 'Perfil' : 'Dashboard'}
             </h1>
             <p className="text-muted-foreground" data-testid="dashboard-subtitle">
               {activeSection === 'comments' 
                 ? 'Gerencie todos os comentários dos seus projetos e conquistas'
                 : activeSection === 'profile'
-                ? 'Gerencie suas informações pessoais e foto de perfil'
-                : activeSection === 'about-photo'
-                ? 'Altere a foto que aparece na seção "sobre mim" de todas as páginas'
+                ? 'Gerencie suas informações pessoais, fotos, texto "sobre mim" e tecnologias'
                 : `Bem-vinda de volta, ${user?.name}!`
               }
             </p>
@@ -645,78 +705,159 @@ export default function AdminDashboard() {
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ) : activeSection === 'about-photo' ? (
-          <Card className="glass-morphism max-w-2xl">
-            <CardHeader>
-              <CardTitle>Foto Sobre Mim</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center space-x-6">
-                <div className="relative group">
-                  <img
-                    src={user?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
-                    alt="Foto Sobre Mim"
-                    className="w-32 h-40 rounded-2xl border-4 border-primary object-cover"
-                    data-testid="about-photo-large"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <Camera className="h-6 w-6 text-white" />
+
+              <Separator />
+
+              {/* About Photo Section */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Foto "Sobre Mim"</h4>
+                <p className="text-sm text-muted-foreground">
+                  Esta foto aparece na seção "sobre mim" da página inicial e outras páginas do portfólio.
+                </p>
+                <div className="flex items-center space-x-6">
+                  <div className="relative group">
+                    <img
+                      src={user?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
+                      alt="Foto Sobre Mim"
+                      className="w-32 h-40 rounded-2xl border-4 border-primary object-cover"
+                      data-testid="about-photo-preview"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                      <Camera className="h-6 w-6 text-white" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAboutPhotoUpload}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        data-testid="about-photo-upload"
+                        disabled={isUploadingAboutPhoto}
+                      />
+                    </div>
+                    {isUploadingAboutPhoto && (
+                      <div className="absolute inset-0 bg-primary bg-opacity-50 rounded-2xl flex items-center justify-center">
+                        <Upload className="h-6 w-6 text-white animate-pulse" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <Button 
+                      onClick={() => document.getElementById('about-photo-file-input')?.click()}
+                      disabled={isUploadingAboutPhoto}
+                      className="bg-primary text-primary-foreground hover:bg-primary/80"
+                      data-testid="upload-about-photo-button"
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {isUploadingAboutPhoto ? 'Carregando...' : 'Alterar Foto "Sobre Mim"'}
+                    </Button>
                     <input
+                      id="about-photo-file-input"
                       type="file"
                       accept="image/*"
                       onChange={handleAboutPhotoUpload}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      data-testid="about-photo-upload"
+                      className="hidden"
                       disabled={isUploadingAboutPhoto}
                     />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
+                    </p>
                   </div>
-                  {isUploadingAboutPhoto && (
-                    <div className="absolute inset-0 bg-primary bg-opacity-50 rounded-2xl flex items-center justify-center">
-                      <Upload className="h-6 w-6 text-white animate-pulse" />
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold" data-testid="about-photo-title">Foto da Seção "Sobre Mim"</h3>
-                  <p className="text-muted-foreground" data-testid="about-photo-description">
-                    Esta foto aparecerá na seção "sobre mim" da página inicial e em outras páginas do portfólio.
-                  </p>
-                  <Badge className="bg-secondary/20 text-secondary">Imagem Principal</Badge>
                 </div>
               </div>
-              
+
               <Separator />
-              
+
+              {/* About Text Section */}
               <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Alterar Foto "Sobre Mim"</h4>
+                <h4 className="text-lg font-semibold">Texto "Sobre Mim"</h4>
                 <p className="text-sm text-muted-foreground">
-                  Clique na foto acima ou use o botão abaixo para fazer upload de uma nova imagem. 
-                  Esta foto será exibida na seção "sobre mim" em todas as páginas onde aparece.
+                  Edite o texto principal e descrição que aparecem na seção "sobre mim" de todas as páginas.
                 </p>
-                <div className="flex items-center space-x-4">
-                  <Button 
-                    onClick={() => document.getElementById('about-photo-file-input')?.click()}
-                    disabled={isUploadingAboutPhoto}
-                    className="bg-primary text-primary-foreground hover:bg-primary/80"
-                    data-testid="upload-about-photo-button"
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    {isUploadingAboutPhoto ? 'Carregando...' : 'Escolher Nova Foto'}
-                  </Button>
-                  <input
-                    id="about-photo-file-input"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAboutPhotoUpload}
-                    className="hidden"
-                    disabled={isUploadingAboutPhoto}
-                  />
-                  <span className="text-xs text-muted-foreground">
-                    Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
-                  </span>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Texto Principal</label>
+                    <Textarea
+                      value={aboutText}
+                      onChange={(e) => setAboutText(e.target.value)}
+                      placeholder="Texto principal da seção sobre mim..."
+                      className="mt-1"
+                      rows={3}
+                      data-testid="about-text-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Descrição</label>
+                    <Textarea
+                      value={aboutDescription}
+                      onChange={(e) => setAboutDescription(e.target.value)}
+                      placeholder="Descrição adicional..."
+                      className="mt-1"
+                      rows={2}
+                      data-testid="about-description-input"
+                    />
+                  </div>
                 </div>
+              </div>
+
+              <Separator />
+
+              {/* Skills Section */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Principais Tecnologias</h4>
+                <p className="text-sm text-muted-foreground">
+                  Gerencie as tecnologias que aparecem na seção "sobre mim" e em outras partes do portfólio.
+                </p>
+                
+                {/* Current Skills */}
+                <div className="flex flex-wrap gap-2">
+                  {skills.map((skill, index) => (
+                    <Badge key={index} variant="secondary" className="pr-1">
+                      {skill}
+                      <Button
+                        onClick={() => handleRemoveSkill(skill)}
+                        size="sm"
+                        variant="ghost"
+                        className="h-auto p-1 ml-1 hover:bg-red-500 hover:text-white"
+                        data-testid={`remove-skill-${skill}`}
+                      >
+                        ×
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Add New Skill */}
+                <div className="flex space-x-2">
+                  <Input
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    placeholder="Nova tecnologia..."
+                    className="flex-1"
+                    data-testid="new-skill-input"
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
+                  />
+                  <Button 
+                    onClick={handleAddSkill}
+                    disabled={!newSkill.trim() || skills.includes(newSkill.trim())}
+                    data-testid="add-skill-button"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Save Button */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={handleUpdateAboutInfo}
+                  disabled={isUpdatingAbout}
+                  className="bg-primary text-primary-foreground hover:bg-primary/80"
+                  data-testid="save-about-info-button"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  {isUpdatingAbout ? 'Salvando...' : 'Salvar Informações'}
+                </Button>
               </div>
             </CardContent>
           </Card>
