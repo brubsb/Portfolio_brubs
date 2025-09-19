@@ -8,6 +8,7 @@ import { AchievementCard } from "@/components/achievement-card";
 import { ToolsCarousel } from "@/components/tools-carousel";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useToast } from "@/hooks/use-toast";
+import { authManager } from "@/lib/auth";
 import { ExternalLink, Linkedin, Github, Mail, Dribbble } from "lucide-react";
 import { Link } from "wouter";
 import type { Project } from "@shared/schema";
@@ -15,6 +16,7 @@ import type { Project } from "@shared/schema";
 export default function Home() {
   const { toast } = useToast();
   const { lastMessage } = useWebSocket();
+  const user = authManager.getUser();
 
   const { data: projects = [], isLoading: projectsLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects", { published: true, featured: true, limit: 6 }],
@@ -77,7 +79,7 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-8 animate-fade-in">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&h=300"
+                src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&h=300"}
                 alt="Bruna Barboza Sofia - Professional Portrait"
                 className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-primary shadow-2xl object-cover"
                 data-testid="hero-portrait"
@@ -262,7 +264,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMajA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=800"
+                  src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMajA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=800"}
                   alt="Bruna Barboza Sofia - Professional About Photo"
                   className="rounded-2xl shadow-2xl w-full max-w-md mx-auto object-cover"
                   data-testid="about-photo"
@@ -354,7 +356,7 @@ export default function Home() {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-4 mb-6">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"
+                src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"}
                 alt="Bruna Barboza Sofia"
                 className="w-12 h-12 rounded-full border-2 border-primary object-cover"
                 data-testid="footer-profile-image"

@@ -14,6 +14,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const user = authManager.getUser();
   
   const [credentials, setCredentials] = useState({
     email: "brunabarbozasofia@gmail.com", // Pre-fill admin email
@@ -74,7 +75,7 @@ export default function AdminLogin() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"
+              src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"}
               alt="Admin Profile"
               className="w-16 h-16 rounded-full border-2 border-primary object-cover"
               data-testid="admin-login-avatar"
