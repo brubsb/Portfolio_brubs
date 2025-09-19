@@ -16,7 +16,15 @@ import type { Project } from "@shared/schema";
 export default function Home() {
   const { toast } = useToast();
   const { lastMessage } = useWebSocket();
-  const user = authManager.getUser();
+  
+  // Fetch public profile data
+  const { data: profile } = useQuery({
+    queryKey: ["/api/profile"],
+    queryFn: async () => {
+      const response = await fetch("/api/profile");
+      return response.json();
+    },
+  });
 
   const { data: projects = [], isLoading: projectsLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects", { published: true, featured: true, limit: 6 }],
@@ -79,7 +87,7 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-8 animate-fade-in">
               <img
-                src={user?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
+                src={profile?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
                 alt="Bruna Barboza Sofia - Professional Portrait"
                 className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-primary shadow-2xl object-cover"
                 data-testid="hero-portrait"
@@ -93,7 +101,7 @@ export default function Home() {
             </h2>
             
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up" data-testid="hero-subtitle">
-              {user?.aboutText || "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis"}
+              {profile?.aboutText || "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis"}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
@@ -264,7 +272,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <img
-                  src={user?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
+                  src={profile?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
                   alt="Bruna Barboza Sofia - Professional About Photo"
                   className="rounded-2xl shadow-2xl w-full max-w-md mx-auto object-cover"
                   data-testid="about-photo"
@@ -275,18 +283,18 @@ export default function Home() {
                 <h2 className="text-4xl md:text-5xl font-bold mb-6" data-testid="about-title">Sobre Mim</h2>
                 
                 <p className="text-lg text-muted-foreground mb-6 leading-relaxed" data-testid="about-description-1">
-                  {user?.aboutText || "Olá! Sou Bruna Barboza Sofia, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes."}
+                  {profile?.aboutText || "Olá! Sou Bruna Barboza Sofia, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes."}
                 </p>
                 
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed" data-testid="about-description-2">
-                  {user?.aboutDescription || "Especializo-me em React, Node.js, e design de interfaces, sempre buscando as melhores práticas e tecnologias mais recentes para entregar resultados excepcionais aos meus clientes."}
+                  {profile?.aboutDescription || "Especializo-me em React, Node.js, e design de interfaces, sempre buscando as melhores práticas e tecnologias mais recentes para entregar resultados excepcionais aos meus clientes."}
                 </p>
                 
                 {/* Skills */}
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4" data-testid="about-skills-title">Principais Tecnologias</h3>
                   <div className="flex flex-wrap gap-3" data-testid="about-skills-list">
-                    {(user?.skills && user.skills.length > 0 ? user.skills : ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"]).map((skill) => (
+                    {(profile?.skills && profile.skills.length > 0 ? profile.skills : ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"]).map((skill) => (
                       <span
                         key={skill}
                         className="px-3 py-2 bg-primary/20 text-primary rounded-full text-sm font-medium"
@@ -356,7 +364,7 @@ export default function Home() {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-4 mb-6">
               <img
-                src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"}
+                src={profile?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"}
                 alt="Bruna Barboza Sofia"
                 className="w-12 h-12 rounded-full border-2 border-primary object-cover"
                 data-testid="footer-profile-image"

@@ -285,6 +285,9 @@ export default function AdminDashboard() {
         authManager.login({ token: currentToken, user: data.user });
       }
       
+      // Invalidate profile query for public pages
+      queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
+      
       toast({
         title: "Sucesso",
         description: "Foto de perfil atualizada com sucesso!",
@@ -323,6 +326,9 @@ export default function AdminDashboard() {
       if (currentToken) {
         authManager.login({ token: currentToken, user: data.user });
       }
+      
+      // Invalidate profile query for public pages
+      queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
       
       toast({
         title: "Sucesso",

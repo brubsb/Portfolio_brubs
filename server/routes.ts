@@ -226,7 +226,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update user profile (including avatar)
-  app.patch('/api/user/profile', authenticateToken, upload.single('avatar'), async (req, res) => {
+  app.patch('/api/user/profile', authenticateToken, upload.fields([
+    { name: 'avatar', maxCount: 1 },
+    { name: 'aboutPhoto', maxCount: 1 }
+  ]), async (req, res) => {
     try {
       if (!req.user) {
         console.log('Profile update: User not authenticated');
@@ -235,13 +238,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Profile update request from user:', req.user.id, req.user.email);
       
-      const file = req.file;
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       const updates: any = {};
 
       // Handle avatar upload
-      if (file) {
-        updates.avatar = `/uploads/${file.filename}`;
-        console.log('Avatar file uploaded:', file.filename);
+      if (files && files.avatar && files.avatar[0]) {
+        updates.avatar = `/uploads/${files.avatar[0].filename}`;
+        console.log('Avatar file uploaded:', files.avatar[0].filename);
+      }
+
+      // Handle about photo upload
+      if (files && files.aboutPhoto && files.aboutPhoto[0]) {
+        updates.aboutPhoto = `/uploads/${files.aboutPhoto[0].filename}`;
+        console.log('About photo file uploaded:', files.aboutPhoto[0].filename);
       }
 
       // Handle other profile updates (name, etc.)
@@ -368,6 +377,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Update about info error:', error);
       res.status(500).json({ message: 'Error updating about information' });
+    }
+  });
+
+  // Public profile endpoint
+  app.get('/api/profile', async (req, res) => {
+    try {
+      // Get admin user for public profile
+      const adminUser = Array.from(storage.users.values()).find(user => user.isAdmin);
+      
+      if (!adminUser) {
+        return res.status(404).json({ message: 'Profile not found' });
+      }
+
+      // Return only public fields (excluding password and admin status)
+      res.json({
+        name: adminUser.name,
+        avatar: adminUser.avatar,
+        aboutPhoto: adminUser.aboutPhoto,
+        aboutText: adminUser.aboutText,
+        aboutDescription: adminUser.aboutDescription,
+        skills: adminUser.skills
+      });
+    } catch (error) {
+      console.error('Get profile error:', error);
+      res.status(500).json({ message: 'Error fetching profile' });
     }
   });
 
