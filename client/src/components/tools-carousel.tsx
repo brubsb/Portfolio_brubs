@@ -27,6 +27,22 @@ export function ToolsCarousel({ featured = true, limit, className }: ToolsCarous
 
   const { data: tools = [], isLoading } = useQuery<Tool[]>({
     queryKey: ['/api/tools', queryParams],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (featured !== undefined) params.append('featured', featured.toString());
+      if (limit) params.append('limit', limit.toString());
+      
+      const url = `/api/tools${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(url, {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
   });
 
   if (isLoading) {

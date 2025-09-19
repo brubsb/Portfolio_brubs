@@ -27,7 +27,7 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
   });
 
   const { data: comments = [] } = useQuery({
-    queryKey: ["/api/comments", { projectId: project.id }],
+    queryKey: ["/api/comments", project.id],
     queryFn: () => apiRequest("GET", `/api/comments?projectId=${project.id}`).then(res => res.json()),
   });
 

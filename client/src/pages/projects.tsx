@@ -24,6 +24,17 @@ export default function Projects() {
 
   const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects", { published: true }],
+    queryFn: async () => {
+      const response = await fetch("/api/projects?published=true", {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
   });
 
   // Filter and sort projects
