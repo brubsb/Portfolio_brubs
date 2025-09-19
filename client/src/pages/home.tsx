@@ -23,10 +23,10 @@ export default function Home() {
     },
   });
 
-  const { data: achievements = [], isLoading: achievementsLoading } = useQuery({
-    queryKey: ["/api/achievements", { limit: 4 }],
+  const { data: certifications = [], isLoading: certificationsLoading } = useQuery({
+    queryKey: ["/api/achievements", { featured: true, limit: 4 }],
     queryFn: async () => {
-      const response = await fetch("/api/achievements?limit=4");
+      const response = await fetch("/api/achievements?featured=true&limit=4");
       return response.json();
     },
   });
@@ -50,7 +50,7 @@ export default function Home() {
 
   const totalProjects = projects.length;
   const totalLikes = projects.reduce((sum: number, p: any) => sum + p.likes, 0) +
-                    achievements.reduce((sum: number, a: any) => sum + a.likes, 0);
+                    certifications.reduce((sum: number, a: any) => sum + a.likes, 0);
   // Get total comments from database
   const { data: totalComments = 0 } = useQuery({
     queryKey: ["/api/comments/count"],
@@ -186,39 +186,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Achievements Section */}
-      <section id="achievements" className="py-20">
+      {/* Certifications Section */}
+      <section id="certifications" className="py-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="achievements-section-title">
-              Conquistas
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="certifications-section-title">
+              Certificações em Destaque
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="achievements-section-subtitle">
-              Marcos importantes na minha jornada profissional
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="certifications-section-subtitle">
+              Principais certificações e conquistas profissionais
             </p>
           </div>
 
-          {achievementsLoading ? (
+          {certificationsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <Card key={i} className="glass-morphism rounded-xl p-6 animate-pulse" data-testid={`achievement-skeleton-${i}`}>
+                <Card key={i} className="glass-morphism rounded-xl p-6 animate-pulse" data-testid={`certification-skeleton-${i}`}>
                   <div className="w-16 h-16 bg-muted/50 rounded-full mx-auto mb-4"></div>
                   <div className="h-4 bg-muted/50 rounded mb-2"></div>
                   <div className="h-12 bg-muted/50 rounded"></div>
                 </Card>
               ))}
             </div>
-          ) : achievements.length === 0 ? (
-            <div className="text-center py-16" data-testid="no-achievements">
-              <p className="text-xl text-muted-foreground">Nenhuma conquista cadastrada ainda.</p>
+          ) : certifications.length === 0 ? (
+            <div className="text-center py-16" data-testid="no-certifications">
+              <p className="text-xl text-muted-foreground">Nenhuma certificação em destaque ainda.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="achievements-grid">
-              {achievements.map((achievement: any) => (
-                <AchievementCard key={achievement.id} achievement={achievement} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="certifications-grid">
+              {certifications.map((certification: any) => (
+                <AchievementCard key={certification.id} achievement={certification} />
               ))}
             </div>
           )}
+
+          <div className="text-center mt-12">
+            <Button
+              variant="outline"
+              asChild
+              className="px-8 py-4 border border-border text-foreground rounded-lg hover:bg-muted transition-all font-medium"
+              data-testid="view-all-certifications-button"
+            >
+              <Link to="/certifications">Ver Todas as Certificações</Link>
+            </Button>
+          </div>
         </div>
       </section>
 

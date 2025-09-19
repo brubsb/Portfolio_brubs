@@ -28,7 +28,7 @@ export interface IStorage {
   deleteProject(id: string): Promise<boolean>;
   
   // Achievements
-  getAchievements(limit?: number, offset?: number): Promise<Achievement[]>;
+  getAchievements(featured?: boolean, limit?: number, offset?: number): Promise<Achievement[]>;
   getAchievement(id: string): Promise<Achievement | undefined>;
   createAchievement(achievement: InsertAchievement): Promise<Achievement>;
   updateAchievement(id: string, achievement: Partial<Achievement>): Promise<Achievement | undefined>;
@@ -148,6 +148,7 @@ export class MemStorage implements IStorage {
         description: "Prêmio de melhor interface de usuário em competição nacional de design",
         icon: "trophy",
         date: new Date("2023-11-15"),
+        isFeatured: true,
         likes: 12,
         createdAt: new Date(),
       },
@@ -157,6 +158,7 @@ export class MemStorage implements IStorage {
         description: "AWS Solutions Architect Associate - Arquitetura de soluções na nuvem",
         icon: "code",
         date: new Date("2023-10-20"),
+        isFeatured: true,
         likes: 8,
         createdAt: new Date(),
       },
@@ -166,6 +168,7 @@ export class MemStorage implements IStorage {
         description: "Palestrante principal sobre desenvolvimento full-stack moderno",
         icon: "users",
         date: new Date("2023-09-10"),
+        isFeatured: false,
         likes: 15,
         createdAt: new Date(),
       },
@@ -175,6 +178,7 @@ export class MemStorage implements IStorage {
         description: "Mestrado em Tecnologia da Informação com foco em Inteligência Artificial",
         icon: "graduation-cap",
         date: new Date("2023-07-01"),
+        isFeatured: false,
         likes: 22,
         createdAt: new Date(),
       },
@@ -264,6 +268,8 @@ export class MemStorage implements IStorage {
       githubUrl: project.githubUrl || null,
       tags: (project.tags || []) as string[],
       technologies: (project.technologies || []) as string[],
+      isPublished: project.isPublished ?? false,
+      isFeatured: project.isFeatured ?? false,
       id,
       likes: 0,
       createdAt: new Date(),
@@ -291,8 +297,14 @@ export class MemStorage implements IStorage {
     return this.projects.delete(id);
   }
 
-  async getAchievements(limit?: number, offset?: number): Promise<Achievement[]> {
+  async getAchievements(featured?: boolean, limit?: number, offset?: number): Promise<Achievement[]> {
     let achievements = Array.from(this.achievements.values());
+    
+    // Filter by featured if specified
+    if (featured !== undefined) {
+      achievements = achievements.filter((achievement: Achievement) => achievement.isFeatured === featured);
+    }
+    
     achievements.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     
     if (offset) {
@@ -315,6 +327,7 @@ export class MemStorage implements IStorage {
     const newAchievement: Achievement = {
       ...achievement,
       id,
+      isFeatured: achievement.isFeatured ?? false,
       likes: 0,
       createdAt: new Date(),
     };

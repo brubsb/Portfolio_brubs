@@ -374,10 +374,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Achievements routes
   app.get('/api/achievements', async (req, res) => {
     try {
+      const featured = req.query.featured === 'true' ? true : 
+                     req.query.featured === 'false' ? false : undefined;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       const offset = req.query.offset ? parseInt(req.query.offset as string) : undefined;
       
-      const achievements = await storage.getAchievements(limit, offset);
+      const achievements = await storage.getAchievements(featured, limit, offset);
       res.json(achievements);
     } catch (error) {
       res.status(500).json({ message: 'Error fetching achievements' });
