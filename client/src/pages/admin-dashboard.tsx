@@ -260,9 +260,9 @@ export default function AdminDashboard() {
     },
     onSuccess: (data) => {
       // Update auth manager with new user data
-      const currentAuth = authManager.getUser();
-      if (currentAuth) {
-        authManager.setAuth(data.user, authManager.getToken()!);
+      const currentToken = authManager.getToken();
+      if (currentToken) {
+        authManager.login({ token: currentToken, user: data.user });
       }
       
       toast({
