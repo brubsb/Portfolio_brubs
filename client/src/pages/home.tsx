@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Navigation } from "@/components/navigation";
 import { ProjectCard } from "@/components/project-card";
 import { AchievementCard } from "@/components/achievement-card";
+import { ToolsCarousel } from "@/components/tools-carousel";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, Linkedin, Github, Mail, Dribbble } from "lucide-react";
@@ -230,6 +231,27 @@ export default function Home() {
               <Link to="/certifications">Ver Todas as Certificações</Link>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Tools & Technologies Section */}
+      <section id="tools" className="py-20 bg-muted/20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="tools-section-title">
+              Ferramentas & Tecnologias
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="tools-section-subtitle">
+              Principais tecnologias e ferramentas que utilizo no desenvolvimento
+            </p>
+          </div>
+
+          <ToolsCarousel 
+            featured={true} 
+            limit={12} 
+            className="max-w-6xl mx-auto" 
+            data-testid="homepage-tools-carousel"
+          />
         </div>
       </section>
 
