@@ -38,6 +38,7 @@ export const achievements = pgTable("achievements", {
   description: text("description").notNull(),
   icon: text("icon").notNull(),
   date: timestamp("date").notNull(),
+  isFeatured: boolean("is_featured").default(false).notNull(),
   likes: integer("likes").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
