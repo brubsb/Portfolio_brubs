@@ -273,6 +273,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: updatedUser.name,
           avatar: updatedUser.avatar,
           aboutPhoto: updatedUser.aboutPhoto,
+          aboutText: updatedUser.aboutText,
+          aboutDescription: updatedUser.aboutDescription,
+          skills: updatedUser.skills,
           isAdmin: updatedUser.isAdmin
         }
       });
@@ -314,12 +317,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: updatedUser.name,
           avatar: updatedUser.avatar,
           aboutPhoto: updatedUser.aboutPhoto,
+          aboutText: updatedUser.aboutText,
+          aboutDescription: updatedUser.aboutDescription,
+          skills: updatedUser.skills,
           isAdmin: updatedUser.isAdmin
         }
       });
     } catch (error) {
       console.error('Update about photo error:', error);
       res.status(500).json({ message: 'Error updating about photo' });
+    }
+  });
+
+  // Update user about information
+  app.patch('/api/user/about', authenticateToken, async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+
+      const { aboutText, aboutDescription, skills } = req.body;
+      const updates: any = {};
+
+      if (aboutText !== undefined) updates.aboutText = aboutText;
+      if (aboutDescription !== undefined) updates.aboutDescription = aboutDescription;
+      if (skills !== undefined) updates.skills = skills;
+
+      console.log('About info update request from user:', req.user.id, updates);
+      
+      const updatedUser = await storage.updateUser(req.user.id, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Return user data (excluding password)
+      res.json({
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          avatar: updatedUser.avatar,
+          aboutPhoto: updatedUser.aboutPhoto,
+          aboutText: updatedUser.aboutText,
+          aboutDescription: updatedUser.aboutDescription,
+          skills: updatedUser.skills,
+          isAdmin: updatedUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Update about info error:', error);
+      res.status(500).json({ message: 'Error updating about information' });
     }
   });
 

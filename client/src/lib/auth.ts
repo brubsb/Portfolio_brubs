@@ -6,6 +6,9 @@ interface AuthUser {
   name: string;
   avatar?: string | null;
   aboutPhoto?: string | null;
+  aboutText?: string | null;
+  aboutDescription?: string | null;
+  skills?: string[];
   isAdmin: boolean;
 }
 
