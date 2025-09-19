@@ -81,7 +81,7 @@ export class MemStorage implements IStorage {
       email: "brunabarbozasofia@gmail.com",
       password: hashedPassword,
       name: "Bruna Barboza Sofia",
-      avatar: "https://pixabay.com/get/gaf7556b18311c7bcd4c78af8631e112568cbec9efc9becb562cbc2b63cbd8c2fe56ff024095ec614d1e960f37d904961a0b81e834895950ec0d05a1f19559698_1280.jpg",
+      avatar: "/uploads/1758308814878-651921657.png",
       isAdmin: true,
       createdAt: new Date(),
     };

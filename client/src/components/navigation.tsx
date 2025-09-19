@@ -35,7 +35,7 @@ export function Navigation() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img
-                src={user?.avatar || "https://pixabay.com/get/gaf7556b18311c7bcd4c78af8631e112568cbec9efc9becb562cbc2b63cbd8c2fe56ff024095ec614d1e960f37d904961a0b81e834895950ec0d05a1f19559698_1280.jpg"}
+                src={user?.avatar || "/uploads/1758308814878-651921657.png"}
                 alt="Bruna Barboza Sofia"
                 className="w-10 h-10 rounded-full border-2 border-primary object-cover"
                 data-testid="profile-image"

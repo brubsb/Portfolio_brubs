@@ -79,7 +79,7 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="mb-8 animate-fade-in">
               <img
-                src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&h=300"}
+                src={user?.avatar || "/uploads/1758308814878-651921657.png"}
                 alt="Bruna Barboza Sofia - Professional Portrait"
                 className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-primary shadow-2xl object-cover"
                 data-testid="hero-portrait"
