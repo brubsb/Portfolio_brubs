@@ -9,6 +9,8 @@ import {
   type InsertComment,
   type Like,
   type InsertLike,
+  type Tool,
+  type InsertTool,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
@@ -42,6 +44,13 @@ export interface IStorage {
   // Likes
   toggleLike(like: InsertLike): Promise<{ liked: boolean; count: number }>;
   getUserLikes(userId: string): Promise<Like[]>;
+  
+  // Tools
+  getTools(featured?: boolean, limit?: number, offset?: number): Promise<Tool[]>;
+  getTool(id: string): Promise<Tool | undefined>;
+  createTool(tool: InsertTool): Promise<Tool>;
+  updateTool(id: string, tool: Partial<Tool>): Promise<Tool | undefined>;
+  deleteTool(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -50,6 +59,7 @@ export class MemStorage implements IStorage {
   private achievements: Map<string, Achievement>;
   private comments: Map<string, Comment>;
   private likes: Map<string, Like>;
+  private tools: Map<string, Tool>;
 
   constructor() {
     this.users = new Map();
@@ -57,6 +67,7 @@ export class MemStorage implements IStorage {
     this.achievements = new Map();
     this.comments = new Map();
     this.likes = new Map();
+    this.tools = new Map();
     
     // Initialize admin user
     this.initializeAdminUser();
@@ -186,6 +197,74 @@ export class MemStorage implements IStorage {
 
     sampleAchievements.forEach(achievement => {
       this.achievements.set(achievement.id, achievement);
+    });
+
+    // Sample tools
+    const sampleTools: Tool[] = [
+      {
+        id: randomUUID(),
+        name: "React",
+        iconUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+        category: "Frontend",
+        website: "https://reactjs.org",
+        isFeatured: true,
+        order: 1,
+        createdAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        name: "Node.js",
+        iconUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+        category: "Backend",
+        website: "https://nodejs.org",
+        isFeatured: true,
+        order: 2,
+        createdAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        name: "TypeScript",
+        iconUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+        category: "Language",
+        website: "https://www.typescriptlang.org",
+        isFeatured: true,
+        order: 3,
+        createdAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        name: "PostgreSQL",
+        iconUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+        category: "Database",
+        website: "https://www.postgresql.org",
+        isFeatured: true,
+        order: 4,
+        createdAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        name: "Figma",
+        iconUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+        category: "Design",
+        website: "https://www.figma.com",
+        isFeatured: true,
+        order: 5,
+        createdAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        name: "AWS",
+        iconUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg",
+        category: "Cloud",
+        website: "https://aws.amazon.com",
+        isFeatured: false,
+        order: 6,
+        createdAt: new Date(),
+      },
+    ];
+
+    sampleTools.forEach(tool => {
+      this.tools.set(tool.id, tool);
     });
   }
 
@@ -473,6 +552,63 @@ export class MemStorage implements IStorage {
 
   async getUserLikes(userId: string): Promise<Like[]> {
     return Array.from(this.likes.values()).filter(like => like.userId === userId);
+  }
+
+  async getTools(featured?: boolean, limit?: number, offset?: number): Promise<Tool[]> {
+    let tools = Array.from(this.tools.values());
+    
+    if (featured !== undefined) {
+      tools = tools.filter(t => t.isFeatured === featured);
+    }
+    
+    tools.sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+    
+    if (offset) {
+      tools = tools.slice(offset);
+    }
+    
+    if (limit) {
+      tools = tools.slice(0, limit);
+    }
+    
+    return tools;
+  }
+
+  async getTool(id: string): Promise<Tool | undefined> {
+    return this.tools.get(id);
+  }
+
+  async createTool(tool: InsertTool): Promise<Tool> {
+    const id = randomUUID();
+    const newTool: Tool = {
+      ...tool,
+      iconUrl: tool.iconUrl || null,
+      category: tool.category || null,
+      website: tool.website || null,
+      isFeatured: tool.isFeatured ?? false,
+      order: tool.order ?? 0,
+      id,
+      createdAt: new Date(),
+    };
+    this.tools.set(id, newTool);
+    return newTool;
+  }
+
+  async updateTool(id: string, updates: Partial<Tool>): Promise<Tool | undefined> {
+    const tool = this.tools.get(id);
+    if (!tool) return undefined;
+    
+    const updatedTool = {
+      ...tool,
+      ...updates,
+      id,
+    };
+    this.tools.set(id, updatedTool);
+    return updatedTool;
+  }
+
+  async deleteTool(id: string): Promise<boolean> {
+    return this.tools.delete(id);
   }
 }
 

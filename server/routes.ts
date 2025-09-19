@@ -26,6 +26,7 @@ import {
   insertAchievementSchema, 
   insertCommentSchema,
   insertLikeSchema,
+  insertToolSchema,
   loginSchema 
 } from "@shared/schema";
 import { sendEmail } from "./services/email";
@@ -542,12 +543,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Tools routes
+  app.get('/api/tools', async (req, res) => {
+    try {
+      const featured = req.query.featured === 'true' ? true : 
+                     req.query.featured === 'false' ? false : undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const offset = req.query.offset ? parseInt(req.query.offset as string) : undefined;
+      
+      const tools = await storage.getTools(featured, limit, offset);
+      res.json(tools);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching tools' });
+    }
+  });
+
+  app.get('/api/tools/:id', async (req, res) => {
+    try {
+      const tool = await storage.getTool(req.params.id);
+      if (!tool) {
+        return res.status(404).json({ message: 'Tool not found' });
+      }
+      res.json(tool);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching tool' });
+    }
+  });
+
+  app.post('/api/tools', authenticateToken, authenticateAdmin, upload.single('icon'), async (req, res) => {
+    try {
+      const file = req.file;
+      const toolData = insertToolSchema.parse({
+        ...req.body,
+        isFeatured: req.body.isFeatured === 'true',
+        order: parseInt(req.body.order) || 0,
+        iconUrl: file ? `/uploads/${file.filename}` : req.body.iconUrl,
+      });
+
+      const tool = await storage.createTool(toolData);
+      res.json(tool);
+    } catch (error) {
+      res.status(400).json({ message: 'Invalid tool data' });
+    }
+  });
+
+  app.patch('/api/tools/:id', authenticateToken, authenticateAdmin, upload.single('icon'), async (req, res) => {
+    try {
+      const file = req.file;
+      const updates: any = { ...req.body };
+      
+      if (req.body.isFeatured !== undefined) {
+        updates.isFeatured = req.body.isFeatured === 'true';
+      }
+      if (req.body.order !== undefined) {
+        updates.order = parseInt(req.body.order);
+      }
+      if (file) {
+        updates.iconUrl = `/uploads/${file.filename}`;
+      }
+
+      const tool = await storage.updateTool(req.params.id, updates);
+      if (!tool) {
+        return res.status(404).json({ message: 'Tool not found' });
+      }
+      res.json(tool);
+    } catch (error) {
+      res.status(400).json({ message: 'Invalid tool data' });
+    }
+  });
+
+  app.delete('/api/tools/:id', authenticateToken, authenticateAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteTool(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: 'Tool not found' });
+      }
+      res.json({ message: 'Tool deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting tool' });
+    }
+  });
+
   // Admin stats route
   app.get('/api/admin/stats', authenticateToken, authenticateAdmin, async (req, res) => {
     try {
       const projects = await storage.getProjects();
       const achievements = await storage.getAchievements();
       const comments = await storage.getComments();
+      const tools = await storage.getTools();
       
       const totalLikes = projects.reduce((sum, p) => sum + p.likes, 0) +
                         achievements.reduce((sum, a) => sum + a.likes, 0);
@@ -560,6 +643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         publishedProjects: publishedProjects.length,
         draftProjects: draftProjects.length,
         totalAchievements: achievements.length,
+        totalTools: tools.length,
         totalLikes,
         totalComments: comments.length,
         recentComments: comments.slice(0, 5),
