@@ -93,7 +93,7 @@ export default function Home() {
             </h2>
             
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up" data-testid="hero-subtitle">
-              Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis
+              {user?.aboutText || "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis"}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
@@ -275,18 +275,18 @@ export default function Home() {
                 <h2 className="text-4xl md:text-5xl font-bold mb-6" data-testid="about-title">Sobre Mim</h2>
                 
                 <p className="text-lg text-muted-foreground mb-6 leading-relaxed" data-testid="about-description-1">
-                  Olá! Sou Bruna Barboza Sofia, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes.
+                  {user?.aboutText || "Olá! Sou Bruna Barboza Sofia, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes."}
                 </p>
                 
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed" data-testid="about-description-2">
-                  Especializo-me em React, Node.js, e design de interfaces, sempre buscando as melhores práticas e tecnologias mais recentes para entregar resultados excepcionais aos meus clientes.
+                  {user?.aboutDescription || "Especializo-me em React, Node.js, e design de interfaces, sempre buscando as melhores práticas e tecnologias mais recentes para entregar resultados excepcionais aos meus clientes."}
                 </p>
                 
                 {/* Skills */}
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4" data-testid="about-skills-title">Principais Tecnologias</h3>
                   <div className="flex flex-wrap gap-3" data-testid="about-skills-list">
-                    {["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"].map((skill) => (
+                    {(user?.skills && user.skills.length > 0 ? user.skills : ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"]).map((skill) => (
                       <span
                         key={skill}
                         className="px-3 py-2 bg-primary/20 text-primary rounded-full text-sm font-medium"
