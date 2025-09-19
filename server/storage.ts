@@ -82,6 +82,7 @@ export class MemStorage implements IStorage {
       password: hashedPassword,
       name: "Bruna Barboza Sofia",
       avatar: "/uploads/1758308814878-651921657.png",
+      aboutPhoto: "/uploads/1758308814878-651921657.png",
       isAdmin: true,
       createdAt: new Date(),
     };
@@ -283,6 +284,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       avatar: insertUser.avatar || null,
+      aboutPhoto: insertUser.aboutPhoto ?? null,
       id,
       password: hashedPassword,
       isAdmin: false,

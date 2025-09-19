@@ -55,7 +55,7 @@ export default function AdminDashboard() {
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
   const [newCommentsCount, setNewCommentsCount] = useState(0);
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments' | 'profile'>('dashboard');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'comments' | 'profile' | 'about-photo'>('dashboard');
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     type: 'project' | 'achievement' | 'comment' | 'tool';
     id: string;
@@ -63,6 +63,8 @@ export default function AdminDashboard() {
   } | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [aboutPhotoFile, setAboutPhotoFile] = useState<File | null>(null);
+  const [isUploadingAboutPhoto, setIsUploadingAboutPhoto] = useState(false);
 
   // Check admin authentication
   useEffect(() => {
@@ -293,12 +295,80 @@ export default function AdminDashboard() {
     },
   });
 
+  const updateAboutPhotoMutation = useMutation({
+    mutationFn: async (aboutPhotoFile: File) => {
+      const formData = new FormData();
+      formData.append('aboutPhoto', aboutPhotoFile);
+
+      const authHeaders = authManager.getAuthHeaders();
+      const headers = { ...authHeaders };
+      delete headers["Content-Type"]; // Remove Content-Type for FormData
+
+      const response = await fetch("/api/user/about-photo", {
+        method: "PATCH",
+        headers: headers,
+        body: formData,
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Update the user data in localStorage
+      if (data.user) {
+        authManager.login({
+          token: authManager.getToken() || '',
+          user: data.user
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      }
+      toast({
+        title: "Sucesso",
+        description: "Foto 'sobre mim' atualizada com sucesso!",
+      });
+      setAboutPhotoFile(null);
+      setIsUploadingAboutPhoto(false);
+    },
+    onError: (error: any) => {
+      console.error('Update about photo error:', error);
+      setIsUploadingAboutPhoto(false);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+        authManager.logout();
+        setLocation('/admin');
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar foto 'sobre mim'. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setAvatarFile(file);
       setIsUploading(true);
       updateProfileMutation.mutate(file);
+    }
+  };
+
+  const handleAboutPhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAboutPhotoFile(file);
+      setIsUploadingAboutPhoto(true);
+      updateAboutPhotoMutation.mutate(file);
     }
   };
 
@@ -449,6 +519,15 @@ export default function AdminDashboard() {
               <User className="mr-3 h-4 w-4" />
               Perfil
             </Button>
+            <Button
+              variant={activeSection === 'about-photo' ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => setActiveSection('about-photo')}
+              data-testid="nav-about-photo"
+            >
+              <Camera className="mr-3 h-4 w-4" />
+              Foto Sobre Mim
+            </Button>
           </nav>
         </div>
 
@@ -481,13 +560,16 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-3xl font-bold" data-testid="dashboard-title">
               {activeSection === 'comments' ? 'Comentários' : 
-               activeSection === 'profile' ? 'Perfil' : 'Dashboard'}
+               activeSection === 'profile' ? 'Perfil' :
+               activeSection === 'about-photo' ? 'Foto Sobre Mim' : 'Dashboard'}
             </h1>
             <p className="text-muted-foreground" data-testid="dashboard-subtitle">
               {activeSection === 'comments' 
                 ? 'Gerencie todos os comentários dos seus projetos e conquistas'
                 : activeSection === 'profile'
                 ? 'Gerencie suas informações pessoais e foto de perfil'
+                : activeSection === 'about-photo'
+                ? 'Altere a foto que aparece na seção "sobre mim" de todas as páginas'
                 : `Bem-vinda de volta, ${user?.name}!`
               }
             </p>
@@ -557,6 +639,79 @@ export default function AdminDashboard() {
                     onChange={handleAvatarUpload}
                     className="hidden"
                     disabled={isUploading}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : activeSection === 'about-photo' ? (
+          <Card className="glass-morphism max-w-2xl">
+            <CardHeader>
+              <CardTitle>Foto Sobre Mim</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center space-x-6">
+                <div className="relative group">
+                  <img
+                    src={user?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
+                    alt="Foto Sobre Mim"
+                    className="w-32 h-40 rounded-2xl border-4 border-primary object-cover"
+                    data-testid="about-photo-large"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <Camera className="h-6 w-6 text-white" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAboutPhotoUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      data-testid="about-photo-upload"
+                      disabled={isUploadingAboutPhoto}
+                    />
+                  </div>
+                  {isUploadingAboutPhoto && (
+                    <div className="absolute inset-0 bg-primary bg-opacity-50 rounded-2xl flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-white animate-pulse" />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold" data-testid="about-photo-title">Foto da Seção "Sobre Mim"</h3>
+                  <p className="text-muted-foreground" data-testid="about-photo-description">
+                    Esta foto aparecerá na seção "sobre mim" da página inicial e em outras páginas do portfólio.
+                  </p>
+                  <Badge className="bg-secondary/20 text-secondary">Imagem Principal</Badge>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Alterar Foto "Sobre Mim"</h4>
+                <p className="text-sm text-muted-foreground">
+                  Clique na foto acima ou use o botão abaixo para fazer upload de uma nova imagem. 
+                  Esta foto será exibida na seção "sobre mim" em todas as páginas onde aparece.
+                </p>
+                <div className="flex items-center space-x-4">
+                  <Button 
+                    onClick={() => document.getElementById('about-photo-file-input')?.click()}
+                    disabled={isUploadingAboutPhoto}
+                    className="bg-primary text-primary-foreground hover:bg-primary/80"
+                    data-testid="upload-about-photo-button"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {isUploadingAboutPhoto ? 'Carregando...' : 'Escolher Nova Foto'}
+                  </Button>
+                  <input
+                    id="about-photo-file-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAboutPhotoUpload}
+                    className="hidden"
+                    disabled={isUploadingAboutPhoto}
                   />
                   <span className="text-xs text-muted-foreground">
                     Formatos aceitos: JPG, PNG, GIF (máx. 50MB)

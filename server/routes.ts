@@ -272,12 +272,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: updatedUser.email,
           name: updatedUser.name,
           avatar: updatedUser.avatar,
+          aboutPhoto: updatedUser.aboutPhoto,
           isAdmin: updatedUser.isAdmin
         }
       });
     } catch (error) {
       console.error('Update profile error:', error);
       res.status(500).json({ message: 'Error updating profile' });
+    }
+  });
+
+  // Update about photo
+  app.patch('/api/user/about-photo', authenticateToken, upload.single('aboutPhoto'), async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'User not authenticated' });
+      }
+
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ message: 'No photo file provided' });
+      }
+
+      const updates = {
+        aboutPhoto: `/uploads/${file.filename}`
+      };
+
+      console.log('About photo upload request from user:', req.user.id, file.filename);
+      
+      const updatedUser = await storage.updateUser(req.user.id, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Return user data (excluding password)
+      res.json({
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          avatar: updatedUser.avatar,
+          aboutPhoto: updatedUser.aboutPhoto,
+          isAdmin: updatedUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error('Update about photo error:', error);
+      res.status(500).json({ message: 'Error updating about photo' });
     }
   });
 
