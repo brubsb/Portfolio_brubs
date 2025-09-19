@@ -60,6 +60,17 @@ export const likes = pgTable("likes", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const tools = pgTable("tools", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  iconUrl: text("icon_url"),
+  category: text("category"),
+  website: text("website"),
+  isFeatured: boolean("is_featured").default(false).notNull(),
+  order: integer("order").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -90,6 +101,11 @@ export const insertLikeSchema = createInsertSchema(likes).omit({
   createdAt: true,
 });
 
+export const insertToolSchema = createInsertSchema(tools).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -106,4 +122,6 @@ export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Comment = typeof comments.$inferSelect;
 export type InsertLike = z.infer<typeof insertLikeSchema>;
 export type Like = typeof likes.$inferSelect;
+export type InsertTool = z.infer<typeof insertToolSchema>;
+export type Tool = typeof tools.$inferSelect;
 export type LoginData = z.infer<typeof loginSchema>;
