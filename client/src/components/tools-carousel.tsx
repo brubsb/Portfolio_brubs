@@ -19,15 +19,14 @@ interface ToolsCarouselProps {
 }
 
 export function ToolsCarousel({ featured = true, limit, className }: ToolsCarouselProps) {
-  // Build query string for the API endpoint
-  const params = new URLSearchParams();
-  if (featured !== undefined) params.append("featured", featured.toString());
-  if (limit) params.append("limit", limit.toString());
-  const queryString = params.toString();
-  const apiUrl = queryString ? `/api/tools?${queryString}` : "/api/tools";
+  // Build query params object for cache key
+  const queryParams = {
+    ...(featured !== undefined && { featured }),
+    ...(limit && { limit }),
+  };
 
   const { data: tools = [], isLoading } = useQuery<Tool[]>({
-    queryKey: [apiUrl],
+    queryKey: ['/api/tools', queryParams],
   });
 
   if (isLoading) {

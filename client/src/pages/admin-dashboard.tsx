@@ -104,7 +104,7 @@ export default function AdminDashboard() {
   });
 
   const { data: tools = [] } = useQuery({
-    queryKey: ["/api/tools"],
+    queryKey: ["/api/tools", {}],
     enabled: authManager.isAdmin(),
   });
 

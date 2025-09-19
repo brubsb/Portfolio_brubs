@@ -1,4 +1,4 @@
-import type { Express, Request } from "express";
+import express, { type Express, type Request } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
@@ -116,15 +116,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // Serve uploaded files
-  app.use('/uploads', (req, res, next) => {
-    const filePath = path.join(uploadsDir, req.path);
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      res.status(404).json({ message: 'File not found' });
-    }
-  });
+  // Serve uploaded files securely
+  app.use('/uploads', express.static(uploadsDir, { 
+    fallthrough: false,
+    index: false
+  }));
 
   // Auth routes
   app.post('/api/auth/register', async (req, res) => {
