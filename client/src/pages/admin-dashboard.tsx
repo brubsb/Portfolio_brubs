@@ -22,6 +22,7 @@ import { useWebSocket } from "@/hooks/use-websocket";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectForm } from "@/components/admin/project-form";
 import { AchievementForm } from "@/components/admin/achievement-form";
+import { ToolForm } from "@/components/admin/tool-form";
 import {
   BarChart3,
   FolderOpen,
@@ -39,7 +40,7 @@ import {
   Camera,
   Upload,
 } from "lucide-react";
-import { Project, Achievement, Comment } from "@shared/schema";
+import { Project, Achievement, Comment, Tool } from "@shared/schema";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -49,12 +50,14 @@ export default function AdminDashboard() {
   
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showAchievementForm, setShowAchievementForm] = useState(false);
+  const [showToolForm, setShowToolForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
+  const [editingTool, setEditingTool] = useState<Tool | null>(null);
   const [newCommentsCount, setNewCommentsCount] = useState(0);
   const [activeSection, setActiveSection] = useState<'dashboard' | 'comments' | 'profile'>('dashboard');
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
-    type: 'project' | 'achievement' | 'comment';
+    type: 'project' | 'achievement' | 'comment' | 'tool';
     id: string;
     title: string;
   } | null>(null);
@@ -97,6 +100,11 @@ export default function AdminDashboard() {
 
   const { data: comments = [] } = useQuery({
     queryKey: ["/api/comments"],
+    enabled: authManager.isAdmin(),
+  });
+
+  const { data: tools = [] } = useQuery({
+    queryKey: ["/api/tools"],
     enabled: authManager.isAdmin(),
   });
 
@@ -196,6 +204,38 @@ export default function AdminDashboard() {
     },
   });
 
+  const deleteToolMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/tools/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tools"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({
+        title: "Sucesso",
+        description: "Ferramenta excluída com sucesso!",
+      });
+      setDeleteConfirmation(null);
+    },
+    onError: (error: any) => {
+      console.error('Delete tool error:', error);
+      if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
+        authManager.logout();
+        setLocation('/admin');
+        toast({
+          title: "Sessão expirada",
+          description: "Faça login novamente para continuar.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir a ferramenta. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+      setDeleteConfirmation(null);
+    },
+  });
+
   const updateProfileMutation = useMutation({
     mutationFn: async (avatarFile: File) => {
       const formData = new FormData();
@@ -286,6 +326,14 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleDeleteTool = (tool: Tool) => {
+    setDeleteConfirmation({
+      type: 'tool',
+      id: tool.id,
+      title: tool.name,
+    });
+  };
+
   const confirmDelete = () => {
     if (!deleteConfirmation) return;
     
@@ -295,6 +343,8 @@ export default function AdminDashboard() {
       deleteAchievementMutation.mutate(deleteConfirmation.id);
     } else if (deleteConfirmation.type === 'comment') {
       deleteCommentMutation.mutate(deleteConfirmation.id);
+    } else if (deleteConfirmation.type === 'tool') {
+      deleteToolMutation.mutate(deleteConfirmation.id);
     }
   };
 
@@ -582,6 +632,7 @@ export default function AdminDashboard() {
                 <TabsList>
                   <TabsTrigger value="projects" data-testid="projects-tab">Projetos</TabsTrigger>
                   <TabsTrigger value="achievements" data-testid="achievements-tab">Conquistas</TabsTrigger>
+                  <TabsTrigger value="tools" data-testid="tools-tab">Ferramentas</TabsTrigger>
                 </TabsList>
                 
                 <div className="flex space-x-2">
@@ -600,6 +651,14 @@ export default function AdminDashboard() {
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Nova Conquista
+                  </Button>
+                  <Button
+                    onClick={() => setShowToolForm(true)}
+                    variant="outline"
+                    data-testid="new-tool-button"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nova Ferramenta
                   </Button>
                 </div>
               </div>
@@ -747,6 +806,84 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              <TabsContent value="tools">
+                <Card className="glass-morphism">
+                  <CardHeader>
+                    <CardTitle>Ferramentas</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {tools.length === 0 ? (
+                      <div className="text-center py-8" data-testid="no-tools-message">
+                        <p className="text-muted-foreground">Nenhuma ferramenta encontrada.</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="tools-grid">
+                        {tools.map((tool: Tool) => (
+                          <Card key={tool.id} className="glass-morphism" data-testid={`tool-card-${tool.id}`}>
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center space-x-3">
+                                  {tool.iconUrl ? (
+                                    <img
+                                      src={tool.iconUrl}
+                                      alt={`${tool.name} icon`}
+                                      className="w-8 h-8 object-contain"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 bg-primary/20 rounded flex items-center justify-center text-primary font-bold text-sm">
+                                      {tool.name.charAt(0).toUpperCase()}
+                                    </div>
+                                  )}
+                                  <h3 className="font-bold" data-testid={`tool-title-${tool.id}`}>{tool.name}</h3>
+                                </div>
+                                <div className="flex space-x-1">
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      setEditingTool(tool);
+                                      setShowToolForm(true);
+                                    }}
+                                    data-testid={`edit-tool-${tool.id}`}
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleDeleteTool(tool)}
+                                    disabled={deleteToolMutation.isPending}
+                                    data-testid={`delete-tool-${tool.id}`}
+                                  >
+                                    <Trash2 className="h-3 w-3 text-destructive" />
+                                  </Button>
+                                </div>
+                              </div>
+                              {tool.category && (
+                                <Badge variant="secondary" className="text-xs mb-2">
+                                  {tool.category}
+                                </Badge>
+                              )}
+                              {tool.website && (
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  <a href={tool.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                    {tool.website}
+                                  </a>
+                                </p>
+                              )}
+                              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <span>Ordem: {tool.order}</span>
+                                <span>{tool.isFeatured ? "Destaque" : "Padrão"}</span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
           </>
         ) : (
@@ -849,6 +986,17 @@ export default function AdminDashboard() {
           onClose={() => {
             setShowAchievementForm(false);
             setEditingAchievement(null);
+          }}
+        />
+      )}
+
+      {showToolForm && (
+        <ToolForm
+          tool={editingTool}
+          isOpen={showToolForm}
+          onClose={() => {
+            setShowToolForm(false);
+            setEditingTool(null);
           }}
         />
       )}
