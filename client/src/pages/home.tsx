@@ -17,6 +17,10 @@ export default function Home() {
 
   const { data: projects = [], isLoading: projectsLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects", { published: true, featured: true, limit: 6 }],
+    queryFn: async () => {
+      const response = await fetch("/api/projects?published=true&featured=true&limit=6");
+      return response.json();
+    },
   });
 
   const { data: achievements = [], isLoading: achievementsLoading } = useQuery({
@@ -47,7 +51,15 @@ export default function Home() {
   const totalProjects = projects.length;
   const totalLikes = projects.reduce((sum: number, p: any) => sum + p.likes, 0) +
                     achievements.reduce((sum: number, a: any) => sum + a.likes, 0);
-  const totalComments = 89; // This would come from a stats API in real implementation
+  // Get total comments from database
+  const { data: totalComments = 0 } = useQuery({
+    queryKey: ["/api/comments/count"],
+    queryFn: async () => {
+      const response = await fetch("/api/comments");
+      const comments = await response.json();
+      return comments.length;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground" data-testid="home-page">
