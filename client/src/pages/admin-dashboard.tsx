@@ -73,6 +73,7 @@ export default function AdminDashboard() {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [isUpdatingAbout, setIsUpdatingAbout] = useState(false);
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
   // Check admin authentication
   useEffect(() => {
@@ -106,27 +107,27 @@ export default function AdminDashboard() {
   const { data: stats = {} } = useQuery({
     queryKey: ["/api/admin/stats"],
     enabled: authManager.isAdmin(),
-  });
+  }) as { data: any };
 
   const { data: projects = [] } = useQuery({
     queryKey: ["/api/projects"],
     enabled: authManager.isAdmin(),
-  });
+  }) as { data: Project[] };
 
   const { data: achievements = [] } = useQuery({
     queryKey: ["/api/achievements"],
     enabled: authManager.isAdmin(),
-  });
+  }) as { data: Achievement[] };
 
   const { data: comments = [] } = useQuery({
     queryKey: ["/api/comments"],
     enabled: authManager.isAdmin(),
-  });
+  }) as { data: (Comment & { user: { name: string; avatar?: string } })[] };
 
   const { data: tools = [] } = useQuery({
     queryKey: ["/api/tools"],
     enabled: authManager.isAdmin(),
-  });
+  }) as { data: Tool[] };
 
   const deleteProjectMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/projects/${id}`),
@@ -320,10 +321,10 @@ export default function AdminDashboard() {
     mutationFn: async (data: { aboutText: string; aboutDescription: string; skills: string[] }) => {
       return apiRequest("PATCH", "/api/user/about", data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       // Update auth manager with new user data
       const currentToken = authManager.getToken();
-      if (currentToken) {
+      if (currentToken && data.user) {
         authManager.login({ token: currentToken, user: data.user });
       }
       
@@ -332,13 +333,15 @@ export default function AdminDashboard() {
       
       toast({
         title: "Sucesso",
-        description: "Informações atualizadas com sucesso!",
+        description: "Informações sobre mim atualizadas com sucesso! As alterações já estão visíveis em todo o site.",
       });
       setIsUpdatingAbout(false);
+      setShowSaveConfirmation(false);
     },
     onError: (error: any) => {
       console.error('Update about info error:', error);
       setIsUpdatingAbout(false);
+      setShowSaveConfirmation(false);
       if (error.message.includes('403') || error.message.includes('401') || error.message.includes('Invalid or expired token')) {
         toast({
           title: "Sessão expirada",
@@ -483,6 +486,10 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     authManager.logout();
     setLocation('/');
+  };
+
+  const handleSaveConfirmation = () => {
+    setShowSaveConfirmation(true);
   };
 
   const handleUpdateAboutInfo = () => {
@@ -856,7 +863,7 @@ export default function AdminDashboard() {
               {/* Save Button */}
               <div className="flex justify-end">
                 <Button 
-                  onClick={handleUpdateAboutInfo}
+                  onClick={handleSaveConfirmation}
                   disabled={isUpdatingAbout}
                   className="bg-primary text-primary-foreground hover:bg-primary/80"
                   data-testid="save-about-info-button"
@@ -1206,8 +1213,8 @@ export default function AdminDashboard() {
               ) : (
                 <div className="space-y-4" data-testid="comments-list">
                   {comments.map((comment: Comment & { user: { name: string; avatar?: string } }) => {
-                    const relatedProject = projects.find(p => p.id === comment.projectId);
-                    const relatedAchievement = achievements.find(a => a.id === comment.achievementId);
+                    const relatedProject = projects.find((p: Project) => p.id === comment.projectId);
+                    const relatedAchievement = achievements.find((a: Achievement) => a.id === comment.achievementId);
                     
                     return (
                       <Card key={comment.id} className="border border-border/50" data-testid={`comment-card-${comment.id}`}>
@@ -1330,6 +1337,46 @@ export default function AdminDashboard() {
               data-testid="confirm-delete"
             >
               {(deleteProjectMutation.isPending || deleteAchievementMutation.isPending) ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Save About Information Confirmation Dialog */}
+      <AlertDialog open={showSaveConfirmation} onOpenChange={setShowSaveConfirmation}>
+        <AlertDialogContent data-testid="save-about-confirmation-dialog">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Alterações</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza de que deseja salvar as alterações nas informações "sobre mim"?
+              <br />
+              <br />
+              <strong>Estas alterações serão aplicadas em todo o seu portfólio:</strong>
+              <br />
+              • Página inicial (seção sobre mim)
+              <br />
+              • Texto e descrição sobre você
+              <br />
+              • Lista de tecnologias/habilidades
+              <br />
+              <br />
+              As mudanças serão visíveis imediatamente para todos os visitantes do site.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              disabled={isUpdatingAbout}
+              data-testid="cancel-save-about"
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleUpdateAboutInfo}
+              disabled={isUpdatingAbout}
+              className="bg-primary text-primary-foreground hover:bg-primary/80"
+              data-testid="confirm-save-about"
+            >
+              {isUpdatingAbout ? "Salvando..." : "Confirmar e Salvar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
