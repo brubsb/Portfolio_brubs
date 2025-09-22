@@ -294,7 +294,7 @@ export default function Home() {
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4" data-testid="about-skills-title">Principais Tecnologias</h3>
                   <div className="flex flex-wrap gap-3" data-testid="about-skills-list">
-                    {(profile?.skills && profile.skills.length > 0 ? profile.skills : ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"]).map((skill) => (
+                    {(profile?.skills && profile.skills.length > 0 ? profile.skills : ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"]).map((skill: string) => (
                       <span
                         key={skill}
                         className="px-3 py-2 bg-primary/20 text-primary rounded-full text-sm font-medium"
