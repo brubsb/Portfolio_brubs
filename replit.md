@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack portfolio website for Bruna Barboza Sofia, built as a modern web application showcasing projects, achievements, and professional information. The application features a React-based frontend with a Node.js/Express backend, designed to present work in an interactive and engaging format with social features like comments and likes.
+This is a full-stack portfolio website for Bruna Barboza, built as a modern web application showcasing projects, achievements, and professional information. The application features a React-based frontend with a Node.js/Express backend, designed to present work in an interactive and engaging format with social features like comments and likes.
 
 # User Preferences
 

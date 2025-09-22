@@ -88,7 +88,7 @@ export default function Home() {
             <div className="mb-8 animate-fade-in">
               <img
                 src={profile?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
-                alt="Bruna Barboza Sofia - Professional Portrait"
+                alt="Bruna Barboza - Professional Portrait"
                 className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-primary shadow-2xl object-cover"
                 data-testid="hero-portrait"
               />
@@ -273,7 +273,7 @@ export default function Home() {
               <div>
                 <img
                   src={profile?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
-                  alt="Bruna Barboza Sofia - Professional About Photo"
+                  alt="Bruna Barboza - Professional About Photo"
                   className="rounded-2xl shadow-2xl w-full max-w-md mx-auto object-cover"
                   data-testid="about-photo"
                 />
@@ -283,7 +283,7 @@ export default function Home() {
                 <h2 className="text-4xl md:text-5xl font-bold mb-6" data-testid="about-title">Sobre Mim</h2>
                 
                 <p className="text-lg text-muted-foreground mb-6 leading-relaxed" data-testid="about-description-1">
-                  {profile?.aboutText || "Olá! Sou Bruna Barboza Sofia, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes."}
+                  {profile?.aboutText || "Olá! Sou Bruna Barboza, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes."}
                 </p>
                 
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed" data-testid="about-description-2">
@@ -363,7 +363,7 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="text-center">
             <div className="mb-6">
-              <h3 className="font-bold" data-testid="footer-name">Bruna Barboza Sofia</h3>
+              <h3 className="font-bold" data-testid="footer-name">Bruna Barboza</h3>
               <p className="text-muted-foreground" data-testid="footer-title">Desenvolvedora Full Stack & UI/UX Designer</p>
             </div>
             
@@ -384,7 +384,7 @@ export default function Home() {
             
             <div className="border-t border-border pt-6">
               <p className="text-muted-foreground" data-testid="footer-copyright">
-                © 2024 Bruna Barboza Sofia. Todos os direitos reservados.
+                © 2025 Bruna Barboza. Todos os direitos reservados.
               </p>
               <p className="text-sm text-muted-foreground mt-2" data-testid="footer-tech">
                 Desenvolvido com React, Tailwind CSS e muito ☕

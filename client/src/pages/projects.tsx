@@ -12,10 +12,10 @@ import type { Project } from "@shared/schema";
 export default function Projects() {
   // Set page title and meta description
   useEffect(() => {
-    document.title = "Todos os Projetos - Bruna Barboza Sofia";
+    document.title = "Todos os Projetos - Bruna Barboza";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Explore a coleção completa de projetos de Bruna Barboza Sofia, incluindo aplicações web, designs inovadores e soluções digitais.');
+      metaDescription.setAttribute('content', 'Explore a coleção completa de projetos de Bruna Barboza, incluindo aplicações web, designs inovadores e soluções digitais.');
     }
   }, []);
   const [searchTerm, setSearchTerm] = useState("");
@@ -209,7 +209,7 @@ export default function Projects() {
         <div className="container mx-auto px-6">
           <div className="text-center">
             <p className="text-muted-foreground" data-testid="footer-copyright">
-              © 2024 Bruna Barboza Sofia. Todos os direitos reservados.
+              © 2025 Bruna Barboza. Todos os direitos reservados.
             </p>
             <p className="text-sm text-muted-foreground mt-2" data-testid="footer-tech">
               Desenvolvido com React, Tailwind CSS e muito ☕

@@ -36,13 +36,13 @@ export function Navigation() {
             <div className="flex items-center space-x-4">
               <img
                 src={user?.avatar || "/uploads/1758308814878-651921657.png"}
-                alt="Bruna Barboza Sofia"
+                alt="Bruna Barboza"
                 className="w-10 h-10 rounded-full border-2 border-primary object-cover"
                 data-testid="profile-image"
               />
               <Link href="/">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" data-testid="site-title">
-                  Bruna Barboza Sofia
+                  Bruna Barboza
                 </h1>
               </Link>
             </div>
