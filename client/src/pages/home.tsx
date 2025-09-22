@@ -362,17 +362,9 @@ export default function Home() {
       <footer className="bg-card py-12 border-t border-border">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-4 mb-6">
-              <img
-                src={profile?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"}
-                alt="Bruna Barboza Sofia"
-                className="w-12 h-12 rounded-full border-2 border-primary object-cover"
-                data-testid="footer-profile-image"
-              />
-              <div>
-                <h3 className="font-bold" data-testid="footer-name">Bruna Barboza Sofia</h3>
-                <p className="text-muted-foreground" data-testid="footer-title">Desenvolvedora Full Stack & UI/UX Designer</p>
-              </div>
+            <div className="mb-6">
+              <h3 className="font-bold" data-testid="footer-name">Bruna Barboza Sofia</h3>
+              <p className="text-muted-foreground" data-testid="footer-title">Desenvolvedora Full Stack & UI/UX Designer</p>
             </div>
             
             <div className="flex justify-center space-x-6 mb-6" data-testid="footer-social-links">
