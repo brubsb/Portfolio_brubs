@@ -384,7 +384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/profile', async (req, res) => {
     try {
       // Get admin user for public profile
-      const adminUser = Array.from(storage.users.values()).find(user => user.isAdmin);
+      const adminUser = await storage.getAdminUser();
       
       if (!adminUser) {
         return res.status(404).json({ message: 'Profile not found' });

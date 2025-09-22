@@ -281,6 +281,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.email === email);
   }
 
+  async getAdminUser(): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.isAdmin === true);
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
     const hashedPassword = await bcrypt.hash(insertUser.password, 10);
@@ -290,7 +294,7 @@ export class MemStorage implements IStorage {
       aboutPhoto: insertUser.aboutPhoto ?? null,
       aboutText: insertUser.aboutText ?? null,
       aboutDescription: insertUser.aboutDescription ?? null,
-      skills: insertUser.skills || [],
+      skills: (insertUser.skills || []) as string[],
       id,
       password: hashedPassword,
       isAdmin: false,
