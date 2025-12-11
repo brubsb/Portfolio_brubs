@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { LoginModal } from "@/components/login-modal";
@@ -17,6 +18,14 @@ export function Navigation() {
   const isAuthenticated = authManager.isAuthenticated();
   const user = authManager.getUser();
   const isAdmin = authManager.isAdmin();
+
+  const { data: adminProfile } = useQuery({
+    queryKey: ["/api/profile"],
+    queryFn: async () => {
+      const response = await fetch("/api/profile");
+      return response.json();
+    },
+  });
 
   const handleLogout = () => {
     authManager.logout();
@@ -37,7 +46,7 @@ export function Navigation() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img
-                src={user?.avatar || "/uploads/1758308814878-651921657.png"}
+                src={adminProfile?.avatar || "/uploads/1758308814878-651921657.png"}
                 alt="Bruna Barboza"
                 className="w-10 h-10 rounded-full border-2 border-primary object-cover"
                 data-testid="profile-image"
