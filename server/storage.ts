@@ -75,7 +75,8 @@ export class MemStorage implements IStorage {
   }
 
   private async initializeAdminUser() {
-    const hashedPassword = await bcrypt.hash("Escola00", 10);
+    const adminPassword = process.env.ADMIN_PASSWORD || "placeholder_password"; // Fallback para desenvolvimento local
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
     const adminUser: User = {
       id: randomUUID(),
       email: "brunabarbozasofia@gmail.com",
