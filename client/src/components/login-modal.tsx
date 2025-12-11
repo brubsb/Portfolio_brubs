@@ -69,6 +69,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (registerData.password.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter no mínimo 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!/[A-Z]/.test(registerData.password)) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter pelo menos uma letra maiúscula",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (registerData.password !== registerData.confirmPassword) {
       toast({
         title: "Erro",
@@ -281,6 +299,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Mínimo 6 caracteres e pelo menos uma letra maiúscula
+                </p>
               </div>
 
               <div>
