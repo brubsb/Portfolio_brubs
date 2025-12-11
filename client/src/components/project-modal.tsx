@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, ExternalLink, Github, Heart, MessageCircle, Share2 } from "lucide-react";
+import { ExternalLink, Github, Heart, MessageCircle, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -92,15 +92,6 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
           <DialogTitle className="text-2xl font-bold" data-testid="project-modal-title">
             {project.title}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute top-4 right-4"
-            data-testid="project-modal-close"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">

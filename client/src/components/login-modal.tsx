@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -147,15 +147,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <DialogTitle className="text-2xl font-bold text-center" data-testid="login-modal-title">
             Bem-vindo de volta
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute top-4 right-4"
-            data-testid="login-modal-close"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         <Tabs defaultValue="login" className="mt-6">
