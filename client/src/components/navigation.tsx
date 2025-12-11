@@ -36,7 +36,6 @@ export function Navigation() {
     { href: "/#home", label: "Início" },
     { href: "/projects", label: "Projetos" },
     { href: "/certifications", label: "Certificações" },
-    { href: "/#about", label: "Sobre" },
   ];
 
   return (
