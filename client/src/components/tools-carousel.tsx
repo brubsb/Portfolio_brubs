@@ -78,15 +78,15 @@ export function ToolsCarousel({ featured = true, limit, className }: ToolsCarous
           align: "start",
           loop: true,
         }}
-        className="w-full"
+        className="w-full px-8 sm:px-0"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
           {tools.map((tool) => (
             <ToolCarouselItem key={tool.id} tool={tool} />
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden sm:flex" data-testid="carousel-previous" />
-        <CarouselNext className="hidden sm:flex" data-testid="carousel-next" />
+        <CarouselPrevious className="-left-3 sm:-left-12" data-testid="carousel-previous" />
+        <CarouselNext className="-right-3 sm:-right-12" data-testid="carousel-next" />
       </Carousel>
     </div>
   );
