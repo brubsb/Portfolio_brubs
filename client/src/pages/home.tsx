@@ -103,10 +103,8 @@ export default function Home() {
               />
             </div>
             
-            <h2 className="text-5xl md:text-7xl font-bold mb-6 animate-slide-up" data-testid="hero-title">
-              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Portfólio Digital
-              </span>
+            <h2 className="text-5xl md:text-7xl font-bold mb-6 animate-slide-up text-foreground" data-testid="hero-title">
+              Portfólio Digital
             </h2>
             
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up" data-testid="hero-subtitle">
@@ -144,11 +142,11 @@ export default function Home() {
                 <div className="text-sm text-muted-foreground">Projetos</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-secondary" data-testid="stats-likes">{totalLikes}</div>
+                <div className="text-3xl font-bold text-primary" data-testid="stats-likes">{totalLikes}</div>
                 <div className="text-sm text-muted-foreground">Curtidas</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent" data-testid="stats-comments">{totalComments}</div>
+                <div className="text-3xl font-bold text-primary" data-testid="stats-comments">{totalComments}</div>
                 <div className="text-sm text-muted-foreground">Comentários</div>
               </div>
             </div>
@@ -322,41 +320,41 @@ export default function Home() {
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-[#0077B5] hover:bg-[#0077B5]/80 rounded-full hover:scale-110 transition-transform"
+                      className="w-12 h-12 bg-primary hover:bg-primary/80 rounded-full hover:scale-105 transition-transform"
                       data-testid="social-linkedin"
                     >
                       <a href="https://www.linkedin.com/in/bruna-barboza-santos?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">
-                        <Linkedin className="h-6 w-6 text-white" />
+                        <Linkedin className="h-6 w-6 text-primary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-[#333] hover:bg-[#333]/80 rounded-full hover:scale-110 transition-transform"
+                      className="w-12 h-12 bg-muted hover:bg-muted/80 rounded-full hover:scale-105 transition-transform"
                       data-testid="social-github"
                     >
                       <a href="https://github.com/brubsb" target="_blank" rel="noopener noreferrer">
-                        <Github className="h-6 w-6 text-white" />
+                        <Github className="h-6 w-6 text-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-[#00B4D8] hover:bg-[#00B4D8]/80 rounded-full hover:scale-110 transition-transform"
+                      className="w-12 h-12 bg-secondary hover:bg-secondary/80 rounded-full hover:scale-105 transition-transform"
                       data-testid="social-email"
                     >
                       <a href="mailto:brunabarbozasofia@gmail.com">
-                        <Mail className="h-6 w-6 text-white" />
+                        <Mail className="h-6 w-6 text-secondary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-[#FF6B00] hover:bg-[#FF6B00]/80 rounded-full hover:scale-110 transition-transform"
+                      className="w-12 h-12 bg-accent hover:bg-accent/80 rounded-full hover:scale-105 transition-transform"
                       data-testid="social-credly"
                     >
                       <a href="https://www.credly.com/users/bruna-barboza.e556d422" target="_blank" rel="noopener noreferrer">
-                        <Award className="h-6 w-6 text-white" />
+                        <Award className="h-6 w-6 text-accent-foreground" />
                       </a>
                     </Button>
                   </div>
