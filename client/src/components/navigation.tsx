@@ -3,13 +3,15 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { LoginModal } from "@/components/login-modal";
+import { UserProfileModal } from "@/components/user-profile-modal";
 import { authManager } from "@/lib/auth";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu, X, User } from "lucide-react";
 
 export function Navigation() {
   const [location] = useLocation();
   const { theme, toggleTheme } = useTheme();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   const isAuthenticated = authManager.isAuthenticated();
@@ -80,6 +82,14 @@ export function Navigation() {
                       />
                     )}
                     <span className="text-sm" data-testid="user-name">{user?.name}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowProfileModal(true)}
+                      data-testid="user-profile-button"
+                    >
+                      <User className="h-4 w-4" />
+                    </Button>
                     {isAdmin && (
                       <Link href="/admin/dashboard">
                         <Button variant="outline" size="sm" data-testid="admin-dashboard-link">
@@ -147,6 +157,17 @@ export function Navigation() {
                   
                   {isAuthenticated ? (
                     <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setShowProfileModal(true);
+                          setShowMobileMenu(false);
+                        }}
+                        data-testid="mobile-user-profile-button"
+                      >
+                        <User className="h-4 w-4" />
+                      </Button>
                       {isAdmin && (
                         <Link href="/admin/dashboard">
                           <Button variant="outline" size="sm" data-testid="mobile-admin-dashboard-link">
@@ -186,6 +207,13 @@ export function Navigation() {
         <LoginModal
           isOpen={showLoginModal}
           onClose={() => setShowLoginModal(false)}
+        />
+      )}
+
+      {showProfileModal && (
+        <UserProfileModal
+          isOpen={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
         />
       )}
     </>
