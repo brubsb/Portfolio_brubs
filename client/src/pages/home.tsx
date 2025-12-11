@@ -87,10 +87,8 @@ export default function Home() {
 
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-        {/* Gradient background with geometric shapes */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-primary/20"></div>
-        <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        {/* Clean solid background */}
+        <div className="absolute inset-0 bg-background"></div>
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
@@ -320,7 +318,7 @@ export default function Home() {
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-primary hover:bg-primary/80 rounded-full hover:scale-105 transition-transform"
+                      className="w-12 h-12 bg-primary rounded-full"
                       data-testid="social-linkedin"
                     >
                       <a href="https://www.linkedin.com/in/bruna-barboza-santos?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">
@@ -330,31 +328,31 @@ export default function Home() {
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-muted hover:bg-muted/80 rounded-full hover:scale-105 transition-transform"
+                      className="w-12 h-12 bg-primary rounded-full"
                       data-testid="social-github"
                     >
                       <a href="https://github.com/brubsb" target="_blank" rel="noopener noreferrer">
-                        <Github className="h-6 w-6 text-foreground" />
+                        <Github className="h-6 w-6 text-primary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-secondary hover:bg-secondary/80 rounded-full hover:scale-105 transition-transform"
+                      className="w-12 h-12 bg-primary rounded-full"
                       data-testid="social-email"
                     >
                       <a href="mailto:brunabarbozasofia@gmail.com">
-                        <Mail className="h-6 w-6 text-secondary-foreground" />
+                        <Mail className="h-6 w-6 text-primary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-accent hover:bg-accent/80 rounded-full hover:scale-105 transition-transform"
+                      className="w-12 h-12 bg-primary rounded-full"
                       data-testid="social-credly"
                     >
                       <a href="https://www.credly.com/users/bruna-barboza.e556d422" target="_blank" rel="noopener noreferrer">
-                        <Award className="h-6 w-6 text-accent-foreground" />
+                        <Award className="h-6 w-6 text-primary-foreground" />
                       </a>
                     </Button>
                   </div>
