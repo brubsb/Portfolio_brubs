@@ -71,10 +71,10 @@ export default function Projects() {
       <Navigation />
 
       {/* Header Section */}
-      <section className="pt-24 pb-12 bg-background">
-        <div className="container mx-auto px-6">
+      <section className="pt-20 sm:pt-24 pb-8 sm:pb-12 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground" data-testid="projects-page-title">
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 text-foreground" data-testid="projects-page-title">
               Todos os Projetos
             </h1>
           </div>
@@ -82,14 +82,14 @@ export default function Projects() {
       </section>
 
       {/* Filters and Search Section */}
-      <section className="py-8 bg-muted/20">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between max-w-6xl mx-auto">
+      <section className="py-6 sm:py-8 bg-muted/20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex flex-col gap-4 items-stretch max-w-6xl mx-auto">
             {/* Search */}
-            <div className="relative flex-1 min-w-0" data-testid="search-container">
+            <div className="relative w-full" data-testid="search-container">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Buscar projetos por título, descrição ou tags..."
+                placeholder="Buscar projetos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 w-full"
@@ -97,16 +97,16 @@ export default function Projects() {
               />
             </div>
 
-            {/* Category Filter */}
-            <div className="flex gap-4 items-center">
+            {/* Category Filter and Sort */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center sm:justify-center">
               <div className="flex items-center gap-2" data-testid="category-filter">
-                <Filter className="h-4 w-4 text-muted-foreground" />
+                <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48" data-testid="select-category">
+                  <SelectTrigger className="w-full sm:w-44" data-testid="select-category">
                     <SelectValue placeholder="Categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas as categorias</SelectItem>
+                    <SelectItem value="all">Todas</SelectItem>
                     {categories.map((category: string) => (
                       <SelectItem key={category} value={category} data-testid={`category-${category}`}>
                         {category}
@@ -118,7 +118,7 @@ export default function Projects() {
 
               {/* Sort */}
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-48" data-testid="select-sort">
+                <SelectTrigger className="w-full sm:w-44" data-testid="select-sort">
                   <SelectValue placeholder="Ordenar por" />
                 </SelectTrigger>
                 <SelectContent>
@@ -141,10 +141,10 @@ export default function Projects() {
       </section>
 
       {/* Projects Grid Section */}
-      <section className="py-12">
-        <div className="container mx-auto px-6">
+      <section className="py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {[...Array(8)].map((_, i) => (
                 <Card key={i} className="glass-morphism rounded-xl overflow-hidden animate-pulse" data-testid={`project-skeleton-${i}`}>
                   <div className="w-full h-48 bg-muted/50"></div>

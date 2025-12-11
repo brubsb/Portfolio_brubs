@@ -101,11 +101,11 @@ export default function Home() {
               />
             </div>
             
-            <h2 className="text-5xl md:text-7xl font-bold mb-6 animate-slide-up text-foreground" data-testid="hero-title">
+            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 animate-slide-up text-foreground" data-testid="hero-title">
               Portfólio Digital
             </h2>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up" data-testid="hero-subtitle">
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto px-4 animate-slide-up" data-testid="hero-subtitle">
               {profile?.heroSubtitle || "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis"}
             </p>
             
@@ -134,18 +134,18 @@ export default function Home() {
             </div>
             
             {/* Stats Overview */}
-            <div className="grid grid-cols-3 gap-6 mt-16 max-w-md mx-auto" data-testid="hero-stats">
+            <div className="grid grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16 max-w-md mx-auto px-4" data-testid="hero-stats">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary" data-testid="stats-projects">{totalProjects}</div>
-                <div className="text-sm text-muted-foreground">Projetos</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary" data-testid="stats-projects">{totalProjects}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Projetos</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary" data-testid="stats-likes">{totalLikes}</div>
-                <div className="text-sm text-muted-foreground">Curtidas</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary" data-testid="stats-likes">{totalLikes}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Curtidas</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary" data-testid="stats-comments">{totalComments}</div>
-                <div className="text-sm text-muted-foreground">Comentários</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary" data-testid="stats-comments">{totalComments}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Comentários</div>
               </div>
             </div>
           </div>
@@ -153,13 +153,13 @@ export default function Home() {
       </section>
 
       {/* Featured Projects Section */}
-      <section id="projects" className="py-20 bg-muted/20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="projects-section-title">
+      <section id="projects" className="py-12 sm:py-20 bg-muted/20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4" data-testid="projects-section-title">
               Projetos em Destaque
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="projects-section-subtitle">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4" data-testid="projects-section-subtitle">
               Uma seleção dos meus trabalhos mais recentes e impactantes
             </p>
           </div>
@@ -203,22 +203,22 @@ export default function Home() {
       </section>
 
       {/* Certifications Section */}
-      <section id="certifications" className="py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="certifications-section-title">
+      <section id="certifications" className="py-12 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4" data-testid="certifications-section-title">
               Certificações em Destaque
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="certifications-section-subtitle">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4" data-testid="certifications-section-subtitle">
               Principais certificações e conquistas profissionais
             </p>
           </div>
 
           {certificationsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[...Array(4)].map((_, i) => (
-                <Card key={i} className="glass-morphism rounded-xl p-6 animate-pulse" data-testid={`certification-skeleton-${i}`}>
-                  <div className="w-16 h-16 bg-muted/50 rounded-full mx-auto mb-4"></div>
+                <Card key={i} className="glass-morphism rounded-xl p-4 sm:p-6 animate-pulse" data-testid={`certification-skeleton-${i}`}>
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-muted/50 rounded-full mx-auto mb-4"></div>
                   <div className="h-4 bg-muted/50 rounded mb-2"></div>
                   <div className="h-12 bg-muted/50 rounded"></div>
                 </Card>
@@ -226,10 +226,10 @@ export default function Home() {
             </div>
           ) : certifications.length === 0 ? (
             <div className="text-center py-16" data-testid="no-certifications">
-              <p className="text-xl text-muted-foreground">Nenhuma certificação em destaque ainda.</p>
+              <p className="text-base sm:text-xl text-muted-foreground">Nenhuma certificação em destaque ainda.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="certifications-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" data-testid="certifications-grid">
               {certifications.map((certification: any) => (
                 <AchievementCard key={certification.id} achievement={certification} />
               ))}
@@ -250,13 +250,13 @@ export default function Home() {
       </section>
 
       {/* Tools & Technologies Section */}
-      <section id="tools" className="py-20 bg-muted/20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="tools-section-title">
+      <section id="tools" className="py-12 sm:py-20 bg-muted/20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4" data-testid="tools-section-title">
               Ferramentas & Tecnologias
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="tools-section-subtitle">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4" data-testid="tools-section-subtitle">
               Principais tecnologias e ferramentas que utilizo no desenvolvimento
             </p>
           </div>
@@ -271,38 +271,38 @@ export default function Home() {
       </section>
 
       {/* About Me Section */}
-      <section id="about" className="py-20 bg-muted/20">
-        <div className="container mx-auto px-6">
+      <section id="about" className="py-12 sm:py-20 bg-muted/20">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
               <div>
                 <img
                   src={profile?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
                   alt="Bruna Barboza - Professional About Photo"
-                  className="rounded-2xl shadow-2xl w-full max-w-md mx-auto object-cover"
+                  className="rounded-2xl shadow-2xl w-full max-w-xs sm:max-w-md mx-auto object-cover"
                   data-testid="about-photo"
                 />
               </div>
               
-              <div>
-                <h2 className="text-4xl md:text-5xl font-bold mb-6" data-testid="about-title">Sobre Mim</h2>
+              <div className="text-center lg:text-left">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6" data-testid="about-title">Sobre Mim</h2>
                 
-                <p className="text-lg text-muted-foreground mb-6 leading-relaxed" data-testid="about-description-1">
+                <p className="text-base sm:text-lg text-muted-foreground mb-4 sm:mb-6 leading-relaxed" data-testid="about-description-1">
                   {profile?.aboutText || "Olá! Sou Bruna Barboza, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes."}
                 </p>
                 
-                <p className="text-lg text-muted-foreground mb-8 leading-relaxed" data-testid="about-description-2">
+                <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 leading-relaxed" data-testid="about-description-2">
                   {profile?.aboutDescription || "Especializo-me em React, Node.js, e design de interfaces, sempre buscando as melhores práticas e tecnologias mais recentes para entregar resultados excepcionais aos meus clientes."}
                 </p>
                 
                 {/* Skills */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-4" data-testid="about-skills-title">Principais Tecnologias</h3>
-                  <div className="flex flex-wrap gap-3" data-testid="about-skills-list">
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4" data-testid="about-skills-title">Principais Tecnologias</h3>
+                  <div className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start" data-testid="about-skills-list">
                     {(profile?.skills && profile.skills.length > 0 ? profile.skills : ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"]).map((skill: string) => (
                       <span
                         key={skill}
-                        className="px-3 py-2 bg-primary/20 text-primary rounded-full text-sm font-medium"
+                        className="px-2 sm:px-3 py-1 sm:py-2 bg-primary/20 text-primary rounded-full text-xs sm:text-sm font-medium"
                         data-testid={`skill-${skill.toLowerCase()}`}
                       >
                         {skill}
@@ -313,46 +313,46 @@ export default function Home() {
                 
                 {/* Social Links */}
                 <div>
-                  <h3 className="text-xl font-bold mb-4" data-testid="about-social-title">Conecte-se Comigo</h3>
-                  <div className="flex space-x-4" data-testid="about-social-links">
+                  <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4" data-testid="about-social-title">Conecte-se Comigo</h3>
+                  <div className="flex space-x-3 sm:space-x-4 justify-center lg:justify-start" data-testid="about-social-links">
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-primary rounded-full"
+                      className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full"
                       data-testid="social-linkedin"
                     >
                       <a href="https://www.linkedin.com/in/bruna-barboza-santos?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">
-                        <Linkedin className="h-6 w-6 text-primary-foreground" />
+                        <Linkedin className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-primary rounded-full"
+                      className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full"
                       data-testid="social-github"
                     >
                       <a href="https://github.com/brubsb" target="_blank" rel="noopener noreferrer">
-                        <Github className="h-6 w-6 text-primary-foreground" />
+                        <Github className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-primary rounded-full"
+                      className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full"
                       data-testid="social-email"
                     >
                       <a href="mailto:brunabarbozasofia@gmail.com">
-                        <Mail className="h-6 w-6 text-primary-foreground" />
+                        <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                       </a>
                     </Button>
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-primary rounded-full"
+                      className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full"
                       data-testid="social-credly"
                     >
                       <a href="https://www.credly.com/users/bruna-barboza.e556d422" target="_blank" rel="noopener noreferrer">
-                        <Award className="h-6 w-6 text-primary-foreground" />
+                        <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                       </a>
                     </Button>
                   </div>

@@ -64,8 +64,8 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
   return (
     <Card className="glass-morphism rounded-xl p-6 text-center hover:scale-105 transition-all duration-300" data-testid={`achievement-card-${achievement.id}`}>
       <CardContent className="p-0">
-        <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-2xl" data-testid={`achievement-icon-${achievement.id}`}>
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-xl sm:text-2xl" data-testid={`achievement-icon-${achievement.id}`}>
             {iconMap[achievement.icon as keyof typeof iconMap] || "🏆"}
           </span>
         </div>
