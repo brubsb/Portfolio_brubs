@@ -342,7 +342,7 @@ export default function Home() {
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-[#FF5722] hover:bg-[#FF5722]/80 rounded-full hover:scale-110 transition-transform"
+                      className="w-12 h-12 bg-[#00B4D8] hover:bg-[#00B4D8]/80 rounded-full hover:scale-110 transition-transform"
                       data-testid="social-email"
                     >
                       <a href="mailto:brunabarbozasofia@gmail.com">
