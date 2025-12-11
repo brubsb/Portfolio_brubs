@@ -9,7 +9,7 @@ import { ToolsCarousel } from "@/components/tools-carousel";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useToast } from "@/hooks/use-toast";
 import { authManager } from "@/lib/auth";
-import { ExternalLink, Linkedin, Github, Mail, Dribbble } from "lucide-react";
+import { ExternalLink, Linkedin, Github, Mail, Award } from "lucide-react";
 import { Link } from "wouter";
 import type { Project } from "@shared/schema";
 
@@ -130,7 +130,7 @@ export default function Home() {
                 className="px-8 py-4 border border-border text-foreground rounded-lg hover:bg-muted transition-all font-medium text-lg"
                 data-testid="linkedin-button"
               >
-                <a href="https://linkedin.com/in/brunabarbozasofia" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.linkedin.com/in/bruna-barboza-santos?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="mr-2 h-5 w-5" />
                   LinkedIn
                 </a>
@@ -325,7 +325,7 @@ export default function Home() {
                       className="w-12 h-12 bg-[#0077B5] hover:bg-[#0077B5]/80 rounded-full hover:scale-110 transition-transform"
                       data-testid="social-linkedin"
                     >
-                      <a href="https://linkedin.com/in/brunabarbozasofia" target="_blank" rel="noopener noreferrer">
+                      <a href="https://www.linkedin.com/in/bruna-barboza-santos?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">
                         <Linkedin className="h-6 w-6 text-white" />
                       </a>
                     </Button>
@@ -335,7 +335,7 @@ export default function Home() {
                       className="w-12 h-12 bg-[#333] hover:bg-[#333]/80 rounded-full hover:scale-110 transition-transform"
                       data-testid="social-github"
                     >
-                      <a href="https://github.com/brunabarbozasofia" target="_blank" rel="noopener noreferrer">
+                      <a href="https://github.com/brubsb" target="_blank" rel="noopener noreferrer">
                         <Github className="h-6 w-6 text-white" />
                       </a>
                     </Button>
@@ -352,11 +352,11 @@ export default function Home() {
                     <Button
                       asChild
                       size="icon"
-                      className="w-12 h-12 bg-[#FF0050] hover:bg-[#FF0050]/80 rounded-full hover:scale-110 transition-transform"
-                      data-testid="social-dribbble"
+                      className="w-12 h-12 bg-[#FF6B00] hover:bg-[#FF6B00]/80 rounded-full hover:scale-110 transition-transform"
+                      data-testid="social-credly"
                     >
-                      <a href="https://dribbble.com/brunabarbozasofia" target="_blank" rel="noopener noreferrer">
-                        <Dribbble className="h-6 w-6 text-white" />
+                      <a href="https://www.credly.com/users/bruna-barboza.e556d422" target="_blank" rel="noopener noreferrer">
+                        <Award className="h-6 w-6 text-white" />
                       </a>
                     </Button>
                   </div>
@@ -377,17 +377,17 @@ export default function Home() {
             </div>
             
             <div className="flex justify-center space-x-6 mb-6" data-testid="footer-social-links">
-              <a href="https://linkedin.com/in/brunabarbozasofia" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-linkedin">
+              <a href="https://www.linkedin.com/in/bruna-barboza-santos?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-linkedin" target="_blank" rel="noopener noreferrer">
                 <Linkedin className="h-6 w-6" />
               </a>
-              <a href="https://github.com/brunabarbozasofia" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-github">
+              <a href="https://github.com/brubsb" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-github" target="_blank" rel="noopener noreferrer">
                 <Github className="h-6 w-6" />
               </a>
               <a href="mailto:brunabarbozasofia@gmail.com" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-email">
                 <Mail className="h-6 w-6" />
               </a>
-              <a href="https://dribbble.com/brunabarbozasofia" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-dribbble">
-                <Dribbble className="h-6 w-6" />
+              <a href="https://www.credly.com/users/bruna-barboza.e556d422" className="text-muted-foreground hover:text-primary transition-colors" data-testid="footer-credly" target="_blank" rel="noopener noreferrer">
+                <Award className="h-6 w-6" />
               </a>
             </div>
             
