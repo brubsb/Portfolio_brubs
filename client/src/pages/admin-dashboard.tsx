@@ -42,6 +42,8 @@ import {
   Camera,
   Upload,
   Save,
+  Menu,
+  X,
 } from "lucide-react";
 import { Project, Achievement, Comment, Tool } from "@shared/schema";
 
@@ -75,6 +77,7 @@ export default function AdminDashboard() {
   const [newSkill, setNewSkill] = useState('');
   const [isUpdatingAbout, setIsUpdatingAbout] = useState(false);
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Check admin authentication
   useEffect(() => {
@@ -517,11 +520,44 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex" data-testid="admin-dashboard">
-      {/* Sidebar */}
-      <nav className="w-64 bg-card border-r border-border flex flex-col" data-testid="admin-sidebar">
-        <div className="p-6">
-          <div className="flex items-center space-x-3 mb-8">
+    <div className="min-h-screen bg-background flex flex-col lg:flex-row" data-testid="admin-dashboard">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-card border-b border-border sticky top-0 z-50">
+        <div className="flex items-center space-x-3">
+          <img
+            src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"}
+            alt="Admin Profile"
+            className="w-8 h-8 rounded-full border-2 border-primary object-cover"
+          />
+          <span className="font-bold text-sm">{user?.name || 'Admin'}</span>
+        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          data-testid="mobile-menu-toggle"
+        >
+          {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 top-[57px]"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Hidden on mobile, shown as slide-in menu */}
+      <nav className={`
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        top-[57px] lg:top-0 h-[calc(100vh-57px)] lg:h-auto lg:min-h-screen
+      `} data-testid="admin-sidebar">
+        <div className="p-4 lg:p-6">
+          <div className="hidden lg:flex items-center space-x-3 mb-8">
             <div className="relative group">
               <img
                 src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"}
@@ -556,7 +592,7 @@ export default function AdminDashboard() {
             <Button
               variant={activeSection === 'dashboard' ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveSection('dashboard')}
+              onClick={() => { setActiveSection('dashboard'); setIsMobileMenuOpen(false); }}
               data-testid="nav-dashboard"
             >
               <BarChart3 className="mr-3 h-4 w-4" />
@@ -565,7 +601,7 @@ export default function AdminDashboard() {
             <Button
               variant="ghost"
               className="w-full justify-start"
-              onClick={() => setShowProjectForm(true)}
+              onClick={() => { setShowProjectForm(true); setIsMobileMenuOpen(false); }}
               data-testid="nav-projects"
             >
               <FolderOpen className="mr-3 h-4 w-4" />
@@ -574,7 +610,7 @@ export default function AdminDashboard() {
             <Button
               variant="ghost"
               className="w-full justify-start"
-              onClick={() => setShowAchievementForm(true)}
+              onClick={() => { setShowAchievementForm(true); setIsMobileMenuOpen(false); }}
               data-testid="nav-achievements"
             >
               <Trophy className="mr-3 h-4 w-4" />
@@ -585,7 +621,8 @@ export default function AdminDashboard() {
               className="w-full justify-start relative"
               onClick={() => {
                 setActiveSection('comments');
-                setNewCommentsCount(0); // Reset notification count when viewing comments
+                setNewCommentsCount(0);
+                setIsMobileMenuOpen(false);
               }}
               data-testid="nav-comments"
             >
@@ -600,7 +637,7 @@ export default function AdminDashboard() {
             <Button
               variant={activeSection === 'profile' ? "secondary" : "ghost"}
               className="w-full justify-start"
-              onClick={() => setActiveSection('profile')}
+              onClick={() => { setActiveSection('profile'); setIsMobileMenuOpen(false); }}
               data-testid="nav-profile"
             >
               <User className="mr-3 h-4 w-4" />
@@ -609,10 +646,10 @@ export default function AdminDashboard() {
           </nav>
         </div>
 
-        <div className="mt-auto p-6">
+        <div className="mt-auto p-4 lg:p-6">
           <Button
             variant="ghost"
-            onClick={() => setLocation('/')}
+            onClick={() => { setLocation('/'); setIsMobileMenuOpen(false); }}
             className="w-full justify-start text-muted-foreground hover:text-foreground mb-2"
             data-testid="back-to-site"
           >
@@ -632,32 +669,32 @@ export default function AdminDashboard() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-auto">
+      <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 lg:mb-8 gap-2">
           <div>
-            <h1 className="text-3xl font-bold" data-testid="dashboard-title">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold" data-testid="dashboard-title">
               {activeSection === 'comments' ? 'Comentários' : 
                activeSection === 'profile' ? 'Perfil' : 'Dashboard'}
             </h1>
-            <p className="text-muted-foreground" data-testid="dashboard-subtitle">
+            <p className="text-sm sm:text-base text-muted-foreground" data-testid="dashboard-subtitle">
               {activeSection === 'comments' 
-                ? 'Gerencie todos os comentários dos seus projetos e conquistas'
+                ? 'Gerencie os comentários'
                 : activeSection === 'profile'
-                ? 'Gerencie suas informações pessoais, fotos, texto "sobre mim" e tecnologias'
-                : `Bem-vinda de volta, ${user?.name}!`
+                ? 'Gerencie suas informações'
+                : `Bem-vinda, ${user?.name}!`
               }
             </p>
           </div>
         </div>
 
         {activeSection === 'profile' ? (
-          <Card className="glass-morphism max-w-2xl">
-            <CardHeader>
-              <CardTitle>Informações do Perfil</CardTitle>
+          <Card className="glass-morphism w-full max-w-2xl">
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Informações do Perfil</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center space-x-6">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
                 <div className="relative group">
                   <img
                     src={user?.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200"}
@@ -682,26 +719,25 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold" data-testid="profile-name">{user?.name}</h3>
-                  <p className="text-muted-foreground" data-testid="profile-email">{user?.email}</p>
+                <div className="space-y-2 text-center sm:text-left">
+                  <h3 className="text-lg sm:text-xl font-bold" data-testid="profile-name">{user?.name}</h3>
+                  <p className="text-sm sm:text-base text-muted-foreground break-all" data-testid="profile-email">{user?.email}</p>
                   <Badge className="bg-primary/20 text-primary">Administrador</Badge>
                 </div>
               </div>
               
               <Separator />
               
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Alterar Foto de Perfil</h4>
-                <p className="text-sm text-muted-foreground">
-                  Clique na sua foto de perfil acima ou use o botão abaixo para fazer upload de uma nova imagem. 
-                  Esta foto será exibida em todo o seu portfólio.
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-base sm:text-lg font-semibold">Alterar Foto de Perfil</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Clique na foto acima ou use o botão abaixo para fazer upload.
                 </p>
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <Button 
                     onClick={() => document.getElementById('profile-file-input')?.click()}
                     disabled={isUploading}
-                    className="bg-primary text-primary-foreground hover:bg-primary/80"
+                    className="bg-primary text-primary-foreground hover:bg-primary/80 w-full sm:w-auto"
                     data-testid="upload-avatar-button"
                   >
                     <Upload className="mr-2 h-4 w-4" />
@@ -716,7 +752,7 @@ export default function AdminDashboard() {
                     disabled={isUploading}
                   />
                   <span className="text-xs text-muted-foreground">
-                    Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
+                    JPG, PNG, GIF (máx. 50MB)
                   </span>
                 </div>
               </div>
@@ -724,12 +760,12 @@ export default function AdminDashboard() {
               <Separator />
 
               {/* About Photo Section */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Foto "Sobre Mim"</h4>
-                <p className="text-sm text-muted-foreground">
-                  Esta foto aparece na seção "sobre mim" da página inicial e outras páginas do portfólio.
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-base sm:text-lg font-semibold">Foto "Sobre Mim"</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Esta foto aparece na seção "sobre mim" do portfólio.
                 </p>
-                <div className="flex items-center space-x-6">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
                   <div className="relative group">
                     <img
                       src={user?.aboutPhoto || "/uploads/1758308814878-651921657.png"}
@@ -754,15 +790,15 @@ export default function AdminDashboard() {
                       </div>
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 text-center sm:text-left">
                     <Button 
                       onClick={() => document.getElementById('about-photo-file-input')?.click()}
                       disabled={isUploadingAboutPhoto}
-                      className="bg-primary text-primary-foreground hover:bg-primary/80"
+                      className="bg-primary text-primary-foreground hover:bg-primary/80 w-full sm:w-auto"
                       data-testid="upload-about-photo-button"
                     >
                       <Upload className="mr-2 h-4 w-4" />
-                      {isUploadingAboutPhoto ? 'Carregando...' : 'Alterar Foto "Sobre Mim"'}
+                      {isUploadingAboutPhoto ? 'Carregando...' : 'Alterar Foto'}
                     </Button>
                     <input
                       id="about-photo-file-input"
@@ -773,7 +809,7 @@ export default function AdminDashboard() {
                       disabled={isUploadingAboutPhoto}
                     />
                     <p className="text-xs text-muted-foreground mt-2">
-                      Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
+                      JPG, PNG, GIF (máx. 50MB)
                     </p>
                   </div>
                 </div>
@@ -782,10 +818,10 @@ export default function AdminDashboard() {
               <Separator />
 
               {/* Hero Subtitle Section */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Subtítulo da Página Inicial</h4>
-                <p className="text-sm text-muted-foreground">
-                  Edite o texto que aparece logo abaixo de "Portfólio Digital" na página inicial.
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-base sm:text-lg font-semibold">Subtítulo da Página Inicial</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Texto abaixo de "Portfólio Digital".
                 </p>
                 <div>
                   <label className="text-sm font-medium">Subtítulo</label>
@@ -803,10 +839,10 @@ export default function AdminDashboard() {
               <Separator />
 
               {/* About Text Section */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Texto "Sobre Mim"</h4>
-                <p className="text-sm text-muted-foreground">
-                  Edite o texto principal e descrição que aparecem na seção "sobre mim" de todas as páginas.
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-base sm:text-lg font-semibold">Texto "Sobre Mim"</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Texto e descrição da seção "sobre mim".
                 </p>
                 <div className="space-y-4">
                   <div>
@@ -837,10 +873,10 @@ export default function AdminDashboard() {
               <Separator />
 
               {/* Skills Section */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Principais Tecnologias</h4>
-                <p className="text-sm text-muted-foreground">
-                  Gerencie as tecnologias que aparecem na seção "sobre mim" e em outras partes do portfólio.
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-base sm:text-lg font-semibold">Principais Tecnologias</h4>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Gerencie as tecnologias do portfólio.
                 </p>
                 
                 {/* Current Skills */}
@@ -900,58 +936,58 @@ export default function AdminDashboard() {
         ) : activeSection === 'dashboard' ? (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
               <Card className="glass-morphism">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total de Projetos</p>
-                      <p className="text-2xl font-bold" data-testid="stats-total-projects">{stats.totalProjects || projects.length}</p>
+                <CardContent className="p-3 sm:p-4 lg:p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Projetos</p>
+                      <p className="text-xl sm:text-2xl font-bold" data-testid="stats-total-projects">{stats.totalProjects || projects.length}</p>
                     </div>
-                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
-                      <FolderOpen className="h-6 w-6 text-primary" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <FolderOpen className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-primary" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="glass-morphism">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total de Curtidas</p>
-                      <p className="text-2xl font-bold" data-testid="stats-total-likes">{stats.totalLikes || 0}</p>
+                <CardContent className="p-3 sm:p-4 lg:p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Curtidas</p>
+                      <p className="text-xl sm:text-2xl font-bold" data-testid="stats-total-likes">{stats.totalLikes || 0}</p>
                     </div>
-                    <div className="w-12 h-12 bg-red-400/20 rounded-full flex items-center justify-center">
-                      <Heart className="h-6 w-6 text-red-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-morphism">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Comentários</p>
-                      <p className="text-2xl font-bold" data-testid="stats-total-comments">{stats.totalComments || comments.length}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center">
-                      <MessageCircle className="h-6 w-6 text-secondary" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-red-400/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Heart className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-red-400" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="glass-morphism">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Conquistas</p>
-                      <p className="text-2xl font-bold" data-testid="stats-total-achievements">{stats.totalAchievements || achievements.length}</p>
+                <CardContent className="p-3 sm:p-4 lg:p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Comentários</p>
+                      <p className="text-xl sm:text-2xl font-bold" data-testid="stats-total-comments">{stats.totalComments || comments.length}</p>
                     </div>
-                    <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
-                      <Trophy className="h-6 w-6 text-accent" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-secondary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-secondary" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-morphism">
+                <CardContent className="p-3 sm:p-4 lg:p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Conquistas</p>
+                      <p className="text-xl sm:text-2xl font-bold" data-testid="stats-total-achievements">{stats.totalAchievements || achievements.length}</p>
+                    </div>
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Trophy className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-accent" />
                     </div>
                   </div>
                 </CardContent>
@@ -959,46 +995,53 @@ export default function AdminDashboard() {
             </div>
 
             {/* Content Tabs */}
-            <Tabs defaultValue="projects" className="space-y-6">
-              <div className="flex items-center justify-between">
-                <TabsList>
-                  <TabsTrigger value="projects" data-testid="projects-tab">Projetos</TabsTrigger>
-                  <TabsTrigger value="achievements" data-testid="achievements-tab">Conquistas</TabsTrigger>
-                  <TabsTrigger value="tools" data-testid="tools-tab">Ferramentas</TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                  <TabsList className="w-full sm:w-auto">
+                    <TabsTrigger value="projects" data-testid="projects-tab" className="text-xs sm:text-sm">Projetos</TabsTrigger>
+                    <TabsTrigger value="achievements" data-testid="achievements-tab" className="text-xs sm:text-sm">Conquistas</TabsTrigger>
+                    <TabsTrigger value="tools" data-testid="tools-tab" className="text-xs sm:text-sm">Ferramentas</TabsTrigger>
+                  </TabsList>
+                </div>
                 
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={() => setShowProjectForm(true)}
-                    className="bg-primary text-primary-foreground hover:bg-primary/80"
+                    className="bg-primary text-primary-foreground hover:bg-primary/80 text-xs sm:text-sm"
+                    size="sm"
                     data-testid="new-project-button"
                   >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Novo Projeto
+                    <Plus className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline">Novo </span>Projeto
                   </Button>
                   <Button
                     onClick={() => setShowAchievementForm(true)}
                     variant="outline"
+                    size="sm"
+                    className="text-xs sm:text-sm"
                     data-testid="new-achievement-button"
                   >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nova Conquista
+                    <Plus className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline">Nova </span>Conquista
                   </Button>
                   <Button
                     onClick={() => setShowToolForm(true)}
                     variant="outline"
+                    size="sm"
+                    className="text-xs sm:text-sm"
                     data-testid="new-tool-button"
                   >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nova Ferramenta
+                    <Plus className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline">Nova </span>Ferramenta
                   </Button>
                 </div>
               </div>
 
               <TabsContent value="projects">
                 <Card className="glass-morphism">
-                  <CardHeader>
-                    <CardTitle>Projetos Recentes</CardTitle>
+                  <CardHeader className="p-4 sm:p-6">
+                    <CardTitle className="text-base sm:text-lg">Projetos Recentes</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {projects.length === 0 ? (
@@ -1084,16 +1127,16 @@ export default function AdminDashboard() {
 
               <TabsContent value="achievements">
                 <Card className="glass-morphism">
-                  <CardHeader>
-                    <CardTitle>Conquistas</CardTitle>
+                  <CardHeader className="p-4 sm:p-6">
+                    <CardTitle className="text-base sm:text-lg">Conquistas</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4 sm:p-6">
                     {achievements.length === 0 ? (
-                      <div className="text-center py-8" data-testid="no-achievements-message">
-                        <p className="text-muted-foreground">Nenhuma conquista encontrada.</p>
+                      <div className="text-center py-6 sm:py-8" data-testid="no-achievements-message">
+                        <p className="text-sm sm:text-base text-muted-foreground">Nenhuma conquista encontrada.</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="achievements-grid">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" data-testid="achievements-grid">
                         {achievements.map((achievement: Achievement) => (
                           <Card key={achievement.id} className="glass-morphism" data-testid={`achievement-card-${achievement.id}`}>
                             <CardContent className="p-4">
@@ -1141,16 +1184,16 @@ export default function AdminDashboard() {
 
               <TabsContent value="tools">
                 <Card className="glass-morphism">
-                  <CardHeader>
-                    <CardTitle>Ferramentas</CardTitle>
+                  <CardHeader className="p-4 sm:p-6">
+                    <CardTitle className="text-base sm:text-lg">Ferramentas</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4 sm:p-6">
                     {tools.length === 0 ? (
-                      <div className="text-center py-8" data-testid="no-tools-message">
-                        <p className="text-muted-foreground">Nenhuma ferramenta encontrada.</p>
+                      <div className="text-center py-6 sm:py-8" data-testid="no-tools-message">
+                        <p className="text-sm sm:text-base text-muted-foreground">Nenhuma ferramenta encontrada.</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="tools-grid">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" data-testid="tools-grid">
                         {tools.map((tool: Tool) => (
                           <Card key={tool.id} className="glass-morphism" data-testid={`tool-card-${tool.id}`}>
                             <CardContent className="p-4">
