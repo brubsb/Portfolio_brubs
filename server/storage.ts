@@ -85,6 +85,7 @@ export class MemStorage implements IStorage {
       aboutPhoto: "/uploads/1758308814878-651921657.png",
       aboutText: "Olá! Sou Bruna Barboza, desenvolvedora full-stack e designer UI/UX com mais de 5 anos de experiência criando soluções digitais inovadoras. Minha paixão é transformar ideias complexas em experiências digitais intuitivas e impactantes.",
       aboutDescription: "Especializo-me em React, Node.js, e design de interfaces, sempre buscando as melhores práticas e tecnologias mais recentes para entregar resultados excepcionais aos meus clientes.",
+      heroSubtitle: "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis",
       skills: ["React", "Node.js", "MongoDB", "TypeScript", "Figma", "AWS"],
       isAdmin: true,
       createdAt: new Date(),

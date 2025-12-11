@@ -8,6 +8,7 @@ interface AuthUser {
   aboutPhoto?: string | null;
   aboutText?: string | null;
   aboutDescription?: string | null;
+  heroSubtitle?: string | null;
   skills?: string[];
   isAdmin: boolean;
 }

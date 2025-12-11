@@ -284,6 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           aboutPhoto: updatedUser.aboutPhoto,
           aboutText: updatedUser.aboutText,
           aboutDescription: updatedUser.aboutDescription,
+          heroSubtitle: updatedUser.heroSubtitle,
           skills: updatedUser.skills,
           isAdmin: updatedUser.isAdmin
         }
@@ -328,6 +329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           aboutPhoto: updatedUser.aboutPhoto,
           aboutText: updatedUser.aboutText,
           aboutDescription: updatedUser.aboutDescription,
+          heroSubtitle: updatedUser.heroSubtitle,
           skills: updatedUser.skills,
           isAdmin: updatedUser.isAdmin
         }
@@ -345,11 +347,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: 'User not authenticated' });
       }
 
-      const { aboutText, aboutDescription, skills } = req.body;
+      const { aboutText, aboutDescription, heroSubtitle, skills } = req.body;
       const updates: any = {};
 
       if (aboutText !== undefined) updates.aboutText = aboutText;
       if (aboutDescription !== undefined) updates.aboutDescription = aboutDescription;
+      if (heroSubtitle !== undefined) updates.heroSubtitle = heroSubtitle;
       if (skills !== undefined) updates.skills = skills;
 
       console.log('About info update request from user:', req.user.id, updates);
@@ -370,6 +373,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           aboutPhoto: updatedUser.aboutPhoto,
           aboutText: updatedUser.aboutText,
           aboutDescription: updatedUser.aboutDescription,
+          heroSubtitle: updatedUser.heroSubtitle,
           skills: updatedUser.skills,
           isAdmin: updatedUser.isAdmin
         }
@@ -397,6 +401,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         aboutPhoto: adminUser.aboutPhoto,
         aboutText: adminUser.aboutText,
         aboutDescription: adminUser.aboutDescription,
+        heroSubtitle: adminUser.heroSubtitle,
         skills: adminUser.skills
       });
     } catch (error) {

@@ -70,6 +70,7 @@ export default function AdminDashboard() {
   const [isUploadingAboutPhoto, setIsUploadingAboutPhoto] = useState(false);
   const [aboutText, setAboutText] = useState('');
   const [aboutDescription, setAboutDescription] = useState('');
+  const [heroSubtitle, setHeroSubtitle] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [isUpdatingAbout, setIsUpdatingAbout] = useState(false);
@@ -89,6 +90,7 @@ export default function AdminDashboard() {
     if (user) {
       setAboutText(user.aboutText || '');
       setAboutDescription(user.aboutDescription || '');
+      setHeroSubtitle(user.heroSubtitle || '');
       setSkills(user.skills || []);
     }
   }, []);
@@ -318,7 +320,7 @@ export default function AdminDashboard() {
   });
 
   const updateAboutInfoMutation = useMutation({
-    mutationFn: async (data: { aboutText: string; aboutDescription: string; skills: string[] }) => {
+    mutationFn: async (data: { aboutText: string; aboutDescription: string; heroSubtitle: string; skills: string[] }) => {
       return apiRequest("PATCH", "/api/user/about", data);
     },
     onSuccess: (data: any) => {
@@ -494,7 +496,7 @@ export default function AdminDashboard() {
 
   const handleUpdateAboutInfo = () => {
     setIsUpdatingAbout(true);
-    updateAboutInfoMutation.mutate({ aboutText, aboutDescription, skills });
+    updateAboutInfoMutation.mutate({ aboutText, aboutDescription, heroSubtitle, skills });
   };
 
   const handleAddSkill = () => {
@@ -774,6 +776,27 @@ export default function AdminDashboard() {
                       Formatos aceitos: JPG, PNG, GIF (máx. 50MB)
                     </p>
                   </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Hero Subtitle Section */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Subtítulo da Página Inicial</h4>
+                <p className="text-sm text-muted-foreground">
+                  Edite o texto que aparece logo abaixo de "Portfólio Digital" na página inicial.
+                </p>
+                <div>
+                  <label className="text-sm font-medium">Subtítulo</label>
+                  <Textarea
+                    value={heroSubtitle}
+                    onChange={(e) => setHeroSubtitle(e.target.value)}
+                    placeholder="Ex: Desenvolvedora Full Stack apaixonada por criar experiências digitais..."
+                    className="mt-1"
+                    rows={2}
+                    data-testid="hero-subtitle-input"
+                  />
                 </div>
               </div>
 

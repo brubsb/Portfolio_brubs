@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   aboutPhoto: text("about_photo"),
   aboutText: text("about_text"),
   aboutDescription: text("about_description"),
+  heroSubtitle: text("hero_subtitle"),
   skills: json("skills").$type<string[]>().default([]).notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

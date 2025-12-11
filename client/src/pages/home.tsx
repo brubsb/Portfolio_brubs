@@ -110,7 +110,7 @@ export default function Home() {
             </h2>
             
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up" data-testid="hero-subtitle">
-              {profile?.aboutText || "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis"}
+              {profile?.heroSubtitle || "Desenvolvedora Full Stack e Designer UI/UX apaixonada por criar experiências digitais memoráveis"}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
