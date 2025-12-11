@@ -25,17 +25,12 @@ export default function Certifications() {
       <Navigation />
       
       {/* Header Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-background via-background/90 to-primary/20">
+      <section className="pt-24 pb-16 bg-background">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6" data-testid="certifications-title">
-              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Certificações
-              </span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-8 text-foreground" data-testid="certifications-title">
+              Certificações
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto" data-testid="certifications-subtitle">
-              Minhas conquistas profissionais e certificações que demonstram expertise em diversas tecnologias e áreas
-            </p>
             
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 max-w-md mx-auto" data-testid="certifications-stats">

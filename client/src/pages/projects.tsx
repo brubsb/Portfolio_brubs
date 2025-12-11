@@ -71,17 +71,12 @@ export default function Projects() {
       <Navigation />
 
       {/* Header Section */}
-      <section className="pt-24 pb-12 bg-gradient-to-br from-background via-background/90 to-primary/20">
+      <section className="pt-24 pb-12 bg-background">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6" data-testid="projects-page-title">
-              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Todos os Projetos
-              </span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground" data-testid="projects-page-title">
+              Todos os Projetos
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto" data-testid="projects-page-subtitle">
-              Explore minha coleção completa de projetos, desde aplicações web até designs inovadores
-            </p>
           </div>
         </div>
       </section>
