@@ -34,6 +34,15 @@ export default function Home() {
     },
   });
 
+  // Query to get total count of all published projects (not just featured)
+  const { data: allProjects = [] } = useQuery<Project[]>({
+    queryKey: ["/api/projects", { published: true }],
+    queryFn: async () => {
+      const response = await fetch("/api/projects?published=true");
+      return response.json();
+    },
+  });
+
   const { data: certifications = [], isLoading: certificationsLoading } = useQuery({
     queryKey: ["/api/achievements", { featured: true, limit: 4 }],
     queryFn: async () => {
@@ -59,9 +68,9 @@ export default function Home() {
     }
   };
 
-  const totalProjects = projects.length;
-  const totalLikes = projects.reduce((sum: number, p: any) => sum + p.likes, 0) +
-                    certifications.reduce((sum: number, a: any) => sum + a.likes, 0);
+  const totalProjects = allProjects.length;
+  const totalLikes = allProjects.reduce((sum: number, p: any) => sum + (p.likes || 0), 0) +
+                    certifications.reduce((sum: number, a: any) => sum + (a.likes || 0), 0);
   // Get total comments from database
   const { data: totalComments = 0 } = useQuery({
     queryKey: ["/api/comments/count"],
