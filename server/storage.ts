@@ -490,10 +490,14 @@ export class MemStorage implements IStorage {
   }
 
   async toggleLike(like: InsertLike): Promise<{ liked: boolean; count: number }> {
+    // Normalize null/undefined for proper comparison
+    const normalizedProjectId = like.projectId || null;
+    const normalizedAchievementId = like.achievementId || null;
+    
     const existingLike = Array.from(this.likes.values()).find(
       l => l.userId === like.userId && 
-           l.projectId === like.projectId && 
-           l.achievementId === like.achievementId
+           (l.projectId || null) === normalizedProjectId && 
+           (l.achievementId || null) === normalizedAchievementId
     );
 
     if (existingLike) {
