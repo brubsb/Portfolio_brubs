@@ -11,10 +11,9 @@ import {
   type InsertLike,
   type Tool,
   type InsertTool,
-} from "@shared/schema";
+} from "../shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
-
 export interface IStorage {
   // Users
   getUser(id: string): Promise<User | undefined>;
